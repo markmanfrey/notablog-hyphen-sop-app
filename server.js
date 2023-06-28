@@ -39,7 +39,10 @@ const listener = app.listen(process.env.PORT || PORT, () => {
 const connectDB = async () => {
     try {
         //mongoose.set('strictQuery', false);
-        await mongoose.connect(process.env.MONGODB_URI,{ family: 4});
+        await mongoose.connect(process.env.MONGODB_URI,
+            { family: 4, 
+            server: {socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 }},
+            replset: {socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 }}});
         console.log(`MongoDB Connected: {conn.connection.host}`);
         console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
     } catch (error) {
@@ -48,4 +51,3 @@ const connectDB = async () => {
     }
   }
   connectDB();
-
