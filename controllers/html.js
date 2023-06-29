@@ -1,6 +1,7 @@
 //import html model
 const html = require('../models/html');
 const multer = require('multer');
+const execSync = require('child_process').execSync;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -49,6 +50,7 @@ const newhtml = (express.urlencoded({ extended: false }),(req, res) => {
                 brew_time: req.body.brew_time,
                 temperature: req.body.temperature,
             })
+            execSync('notablog generate .')
 
             // save this object to database
             newhtml.save((err, data)=>{
