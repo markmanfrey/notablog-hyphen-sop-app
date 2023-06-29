@@ -11,6 +11,7 @@ RUN npm install web-vitals
 RUN npm install react-scripts@3.4.1 -g --silent
 COPY . ./
 RUN npm run build
+RUN npm i -g notablog
 
 # production environment
 FROM nginx:stable-alpine
