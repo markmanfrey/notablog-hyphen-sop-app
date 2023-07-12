@@ -50,7 +50,7 @@ const newhtml = (express.urlencoded({ extended: false }),(req, res) => {
                 brew_time: req.body.brew_time,
                 temperature: req.body.temperature,
             })
-            execSync('notablog generate .')
+            execSync('notablog-app generate .')
 
             // save this object to database
             newhtml.save((err, data)=>{
