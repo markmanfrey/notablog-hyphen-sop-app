@@ -25,6 +25,11 @@ app.use(function (req, res) {
     res.end(JSON.stringify(req.body, null, 2))
 })
 
+app.route('/')
+.get(function (req, res) {
+  res.sendFile(process.cwd() + '/index.html');
+});
+
 app.use('/', routes); //to use the routes
 
 app.use(helmet());
@@ -50,4 +55,4 @@ const connectDB = async () => {
         process.exit(1);
     }
   }
-  connectDB();
+connectDB();
