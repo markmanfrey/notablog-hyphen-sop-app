@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- iOS Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Chrome, Firefox OS and Opera Status Bar Color -->
+<meta name="theme-color" content="#FFFFFF">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+<link rel="stylesheet" type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism.min.css">
+<link rel="stylesheet" type="text/css" href="css/SourceSansPro.css">
+<link rel="stylesheet" type="text/css" href="css/theme.css">
+<link rel="stylesheet" type="text/css" href="css/notablog.css">
+<!-- Favicon -->
+
+<style>
+  :root {
+    font-size: 20px;
+  }
+</style>
+  <title>System States&nbsp;|&nbsp;[CCC] SOP Articles</title>
+  <meta property="og:type" content="blog">
+  <meta property="og:title" content="System States">
+  
+  
+  <style>
+    .DateTagBar {
+      margin-top: 1.0rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <nav class="Navbar">
+  <a href="index.html">
+    <div class="Navbar__Btn">
+      
+      <span>Home</span>
+    </div>
+  </a>
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="fault-resolution-boot-camp-af5913.html">
+        <div class="Navbar__Btn">
+          
+          <span>Fault Resolution Boot Camp</span>
+        </div>
+      </a>
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="makeline-basics-41f4f4.html">
+        <div class="Navbar__Btn">
+          
+          <span>Makeline Basics</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="cabinet-screens-1e5755.html">
+        <div class="Navbar__Btn">
+          
+          <span>Cabinet Screens</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="lift-screen-85bca5.html">
+        <div class="Navbar__Btn">
+          
+          <span>Lift Screen</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="system-states-f92089.html">
+        <div class="Navbar__Btn">
+          
+          <span>System States</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+</nav> -->
+  <header class="Header">
+    
+    <div class="Header__Spacer Header__Spacer--NoCover">
+    </div>
+    
+    <h1 class="Header__Title">System States</h1>
+    
+      <div class="DateTagBar">
+        
+        
+          <span class="DateTagBar__Item DateTagBar__Tag DateTagBar__Tag--gray">
+            <a href="tag/test.html">test</a>
+          </span>
+        
+      </div>
+    
+  </header>
+  <article id="https://www.notion.so/f92089b24e224816b5ea70061c939037" class="PageRoot"><h2 id="https://www.notion.so/fb43c6a49e794772ac436d30049cca17" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/fb43c6a49e794772ac436d30049cca17"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Overview</span></span></h2><div id="https://www.notion.so/523a054a0fa44e4796a7493728765485" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">During operation of the makeline, you will move through various states of the system. Some will be automatically presented, others you will elect voluntarily. Below is a description of each major state you will encounter.</span></span></p></div><div id="https://www.notion.so/d5c7edc35ff24697b7c366abf49f0e76" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/da5e5b5d46444b14a8d86c276c080441" class="Divider"></div><h2 id="https://www.notion.so/566cd5b4bd6b495098778a61a0cee4dc" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/566cd5b4bd6b495098778a61a0cee4dc"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Active</span></span></h2><div id="https://www.notion.so/2bd53dfc5813460eb866381dcab3c6d9" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The Active state (aka On, aka Automation) allows the machine to assemble bowls in a fully autonomous way with little or no intervention from you. </span></span></p></div><div id="https://www.notion.so/345fb4068843477e8c619cf309678c1f" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/85ee0b7478734ce5a64f7db35657b878" class="Image Image--PageWidth"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd6344e8f-9485-4036-a2f2-053a9c8acaae%2FActive.png?width=6550&amp;table=block&amp;id=85ee0b74-7873-4ce5-a64f-7db35657b878"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd6344e8f-9485-4036-a2f2-053a9c8acaae%2FActive.png?width=6550&amp;table=block&amp;id=85ee0b74-7873-4ce5-a64f-7db35657b878" style="width:100%"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div><div id="https://www.notion.so/1000d334d5fa45dc82a0fd8fb5fe8358" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/9cbf3b03ff3a4206a4d7a625fa1183be" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When in the Active state:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/6f6319bded5243c9b629f4ae5e0a6603" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Automated assembly active</span></span></li><li id="https://www.notion.so/2205b827c0c24ce3a0c5ad82ae088477" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Queue is accumulating orders (and removing them based on status in the payload)</span></span></li><li id="https://www.notion.so/ccb2d53161e44fb8b26ba1277bb5e656" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Cabinet temperature system is active</span></span></li></ul><div id="https://www.notion.so/eeea7f1e49804a05945da578cbed139d" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><h3 id="https://www.notion.so/41587e5a745b479cb32bd7c28497de43" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--3"><a class="Anchor" href="#https://www.notion.so/41587e5a745b479cb32bd7c28497de43"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Description of screens</span></span></h3><ol class="NumberedListWrapper"><li id="https://www.notion.so/f22d76b742f64f2f82f8dac7d952c877" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Makeline is active, but there are no entrees being assembled</span></span></li><li id="https://www.notion.so/acd41aeb1f904b99863cfa4d8bee73e0" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Entree has started assembly and is in the Denester</span></span></li><li id="https://www.notion.so/0dccd847f9234b72a98d73311f6089b2" class="NumberedList" value="3"><span class="SemanticStringArray"><span class="SemanticString">Entree is mid-assembly</span></span></li><li id="https://www.notion.so/baaeee5249214c46ad50df6aaa297cb5" class="NumberedList" value="4"><span class="SemanticStringArray"><span class="SemanticString">Entree is at the Lift waiting for user input</span></span></li><li id="https://www.notion.so/90e0c10654ec41cbb604369e1285bd31" class="NumberedList" value="5"><span class="SemanticStringArray"><span class="SemanticString">Entree is moving up towards the counter</span></span></li><li id="https://www.notion.so/0678bf85b521482d83800bf6968ca1eb" class="NumberedList" value="6"><span class="SemanticStringArray"><span class="SemanticString">Entree is ready to removed from the Lift</span></span></li></ol><div id="https://www.notion.so/7dd7944ff0d341d1896d78911598f828" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/cd5313eb3c844f2b8debc3f95bdd7461" class="Divider"></div><h2 id="https://www.notion.so/727ef42284fa4d4c9b0f19b41c5e264b" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/727ef42284fa4d4c9b0f19b41c5e264b"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Paused</span></span></h2><div id="https://www.notion.so/4b9f2f291efd4334b19a99265a0ad92a" class="ColumnList"><div id="https://www.notion.so/b5ea3281e0be4f36bd5ddba56a3571ed" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.625)"><div id="https://www.notion.so/c83f83f75b424d5383ceb23e0ae5c860" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The Paused state temporarily stops the Makeline from assembling bowls automatically.</span></span></p></div><div id="https://www.notion.so/3cae38ecd29d4bc9bc39693b2004dab5" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When in the Paused state:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/dd078d0c6986491f8dbb7b05b78a7f60" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">🛑 Automated assembly paused</span></span></li><li id="https://www.notion.so/f056be8bcd734849b9aa078a0e1cd185" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Queue is accumulating orders (and removing them based on status in the payload)</span></span></li><li id="https://www.notion.so/6c65a09274a546b0abed98eba5a7410e" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Cabinet temperature system is active</span></span></li></ul></div><div id="https://www.notion.so/fb31398cb470430eab8dfc338d0bebee" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.375)"><div id="https://www.notion.so/4e633b2fcc194dc1b1edba11ab1723db" class="Image Image--Normal"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd24ae09d-3196-4221-8b03-f48ed65f0af9%2FPaused.png?width=192&amp;table=block&amp;id=4e633b2f-cc19-4dc1-b1ed-ba11ab1723db"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd24ae09d-3196-4221-8b03-f48ed65f0af9%2FPaused.png?width=192&amp;table=block&amp;id=4e633b2f-cc19-4dc1-b1ed-ba11ab1723db" style="width:192px"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div></div></div><div id="https://www.notion.so/730b607f534245119b67b003a73339a5" class="Divider"></div><h2 id="https://www.notion.so/8e46a53d6ece4d74b30d05acf3ff105d" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/8e46a53d6ece4d74b30d05acf3ff105d"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Manual</span></span></h2><div id="https://www.notion.so/9bc3ba2262b945269c3632c3fb81b640" class="ColumnList"><div id="https://www.notion.so/3f1b3457053040c8a3456959ce98f88c" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.625)"><div id="https://www.notion.so/f2ca90287a194aec974965a631d0277c" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">In the event that automation is not available, the Manual state can be used so that ALL entrees must be assembled by hand. </span></span></p></div><div id="https://www.notion.so/79dfe036748b42c0bb10acfafcc5d2c4" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When in the Manual state, the Makeline:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/8047419cc75a4fbbbc82fdeda7db0055" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">🛑 Automated assembly is stopped</span></span></li><li id="https://www.notion.so/f87f69646aa74e098cbbcae651c5a03a" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Queue is accumulating orders (and removing them based on status in the payload)</span></span></li><li id="https://www.notion.so/57d7d78ebebc4899a66e3b0c1963c4bf" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Cabinet temperature system is active</span></span></li></ul></div><div id="https://www.notion.so/45f02fab794b42e9b0d03bff42d37b3f" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.375)"><div id="https://www.notion.so/130b6855e8574fbdb161b6cace41424d" class="Image Image--Normal"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F99e0f235-5d7a-4132-9b06-32d70004857e%2FManual.png?width=192&amp;table=block&amp;id=130b6855-e857-4fbd-b161-b6cace41424d"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F99e0f235-5d7a-4132-9b06-32d70004857e%2FManual.png?width=192&amp;table=block&amp;id=130b6855-e857-4fbd-b161-b6cace41424d" style="width:192px"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div></div></div><div id="https://www.notion.so/0b9a510c05a44ae9be2e342b6816cd8a" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/c9d89b6d611c4a058f07bb3103c5ae82" class="Divider"></div><h2 id="https://www.notion.so/41058ce0128f40bab0bbfa886af4f17e" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/41058ce0128f40bab0bbfa886af4f17e"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Off</span></span></h2><div id="https://www.notion.so/fd095f31863b45b8bffc8b7b949b944b" class="ColumnList"><div id="https://www.notion.so/591db098e0a74521ba68c2d0517456cb" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.625)"><div id="https://www.notion.so/6b30e47101d642e29b4fa345db44f795" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The Off </span><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">UI</strong></span><span class="SemanticString"> state stops the Makeline from assembling bowls automatically. The most common use is at the end of the day when the Makeline will no longer be used to make manual or automated entrees.</span></span></p></div><div id="https://www.notion.so/9ca6712d4d1f4187b49f346190c38e3a" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When in the Off state, the Makeline:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/2ad87023c94240c08b500ea9e5935946" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">🛑 Automated assembly is stopped</span></span></li><li id="https://www.notion.so/12c52b62e2b44581b4ed3ffdb3a9cf86" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Queue is accumulating orders (and removing them based on status in the payload)</span></span></li><li id="https://www.notion.so/dad4008f8e7d4974a1ab8a1c534da9c8" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">🛑 Cabinet temperature system is stopped</span></span></li></ul><div id="https://www.notion.so/45f972c6bc6e4716a06999e8d221d9c6" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div></div><div id="https://www.notion.so/62440d5839714f00adac8a39f93c4c11" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.37500000000000006)"><div id="https://www.notion.so/e6914fa7d445416194c07ad446c433a9" class="Image Image--Normal"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fcecdfad0-9ed1-4ccc-a3ee-793e358c679e%2FOff.png?width=192&amp;table=block&amp;id=e6914fa7-d445-4161-94c0-7ad446c433a9"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fcecdfad0-9ed1-4ccc-a3ee-793e358c679e%2FOff.png?width=192&amp;table=block&amp;id=e6914fa7-d445-4161-94c0-7ad446c433a9" style="width:192px"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div></div></div><div id="https://www.notion.so/e51e1ba24d9f4a33b692856b9fe6aa78" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/0265ef7c830e466a91333d2fd00bbdd1" class="Divider"></div><div id="https://www.notion.so/2cc7b8dc7d91480888107f32c5e63915" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><h2 id="https://www.notion.so/886ef59b28544dd4b0af7490acfeed55" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/886ef59b28544dd4b0af7490acfeed55"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Device Fault</span></span></h2><div id="https://www.notion.so/68ab73aa494647af844ea63e27630cfa" class="ColumnList"><div id="https://www.notion.so/208abe75090f437dbf8ecef31c6cbd12" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.625)"><div id="https://www.notion.so/b8f66ace353349d99aeb5b06e944ac44" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The Device Fault functions just like a nominal Active state, except that the Lift Screen adds an red banner alerting you about an issue with the system. No operational changes take place.</span></span></p></div><div id="https://www.notion.so/123552fa65294a7494eede009743f644" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When in there is a Device Fault:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/9e398b395eb547c68bf295babe838960" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Automated assembly active</span></span></li><li id="https://www.notion.so/bedf3eca1dd948c98b4797f9d2cd81b2" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Queue is accumulating orders (and removing them based on status in the payload)</span></span></li><li id="https://www.notion.so/25a32d8f2fcc4ef3ab3e343a041f7817" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Cabinet temperature system is active</span></span></li></ul><div id="https://www.notion.so/a7452edcd75f42c981acfc733678aec5" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div></div><div id="https://www.notion.so/036f4441fa834836a77597e9cfb1f9ee" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.375)"><div id="https://www.notion.so/f081004e9392444f9d3b8e6bacbe8a7a" class="Image Image--Normal"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fed55f496-f622-4e97-aa9c-0962516a075d%2FActive_with_Device_Fault.png?width=192&amp;table=block&amp;id=f081004e-9392-444f-9d3b-8e6bacbe8a7a"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fed55f496-f622-4e97-aa9c-0962516a075d%2FActive_with_Device_Fault.png?width=192&amp;table=block&amp;id=f081004e-9392-444f-9d3b-8e6bacbe8a7a" style="width:192px"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div></div></div><div id="https://www.notion.so/01f6aaba54b04c14a63839251eaf91b1" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/0d313fee2ad740579b07dcef5e6af10b" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/3f2e5da199534eadafebec2c819d8a6e" class="Divider"></div><h2 id="https://www.notion.so/e4c64d15edc4460bac757783fbcc0b50" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/e4c64d15edc4460bac757783fbcc0b50"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString"><span class="SemanticString__Fragment SemanticString__Fragment--Commented">System Fault</span></span></span></h2><div id="https://www.notion.so/d1defd7653244e6baab66261fb252af3" class="ColumnList"><div id="https://www.notion.so/213c7cd997f54a7baeb3670a22aecf9f" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.625)"><div id="https://www.notion.so/961f2958cb2044a7b356a7d5c6fd9af3" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The System Fault functions just like Paused, except that it is forced/automatically triggered rather than being initiated by the operator. </span></span></p></div><div id="https://www.notion.so/276842c747214563bb1e1437c484bfbc" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When in the Faulted state:</span></span></p></div><ul class="BulletedListWrapper"><li id="https://www.notion.so/0d937fa11c774fce8f17d32828f7c918" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">🛑 Automated assembly stopped</span></span></li><li id="https://www.notion.so/a71f48e3e158456ab64fa941bf666b3d" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">⚠️ Queue is accumulating orders if possible (and removing them based on status in the payload)</span></span></li><li id="https://www.notion.so/d524acd2891f43959870b816318e076b" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">✅ Cabinet temperature system is active</span></span></li></ul><div id="https://www.notion.so/7991e7bd4a9246168c0c25de0e94f0ad" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/a196292266904d6d81837a2b32cf1e67" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The automated trigger to enter System Faulted state occurs because of two scenarios (all conditions must be met to trigger the faulted state):</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/43afcc90644f43839c1d09807aa9d2ab" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Loss of Connectivity - the Makeline is in an unknown state where items may be queued up in the cloud, but unable to make it to the Makeline. We trigger the Faulted state as a precaution.</span></span></li><li id="https://www.notion.so/8111a884cb9540e5a9f78880301ac02c" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">“Stuck” Queue - there are known items that need assembly, but they can’t make progress beyond the issue highlighted by the device-level fault.</span></span></li></ol></div><div id="https://www.notion.so/28920f8edadd4b369315237198ba21cf" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.375)"><div id="https://www.notion.so/2b1cf619fcd74d29a7b7ef9aa6d52cfd" class="Image Image--Normal"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fa7f8cad1-2f7b-45e1-a9dd-de52d14d4e5c%2FSytem_Fault.png?width=192&amp;table=block&amp;id=2b1cf619-fcd7-4d29-a7b7-ef9aa6d52cfd"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fa7f8cad1-2f7b-45e1-a9dd-de52d14d4e5c%2FSytem_Fault.png?width=192&amp;table=block&amp;id=2b1cf619-fcd7-4d29-a7b7-ef9aa6d52cfd" style="width:192px"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div></div></div><div id="https://www.notion.so/645fbd411e1249efb521b40e57cc29a9" class="Divider"></div><h2 id="https://www.notion.so/25440c543c434ca1a3e560a7b357542b" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/25440c543c434ca1a3e560a7b357542b"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Special Cases</span></span></h2><h3 id="https://www.notion.so/643412b98b274f8fadd521a86a870ef5" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--3"><a class="Anchor" href="#https://www.notion.so/643412b98b274f8fadd521a86a870ef5"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Incomplete</span><span class="SemanticString"><span class="SemanticString__Fragment SemanticString__Fragment--Commented"> Entree</span></span></span></h3><div id="https://www.notion.so/4ce9a0a0fac046629fbd4ccc298552a4" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When an entree has been partially completed, but must stop because of a System Fault, you are given an opportunity to manually move the partially lost entree out of the makeline so you can finish it manually.</span></span></p></div><div id="https://www.notion.so/b28a3d2f37ea42628fd127f20b7387a1" class="Image Image--PageWidth"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F009a524c-6cc1-4ebf-837a-864efd10d34f%2FSystem_Fault_with_Partial_Purge.png?width=5451&amp;table=block&amp;id=b28a3d2f-37ea-4262-8fd1-27f20b7387a1"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F009a524c-6cc1-4ebf-837a-864efd10d34f%2FSystem_Fault_with_Partial_Purge.png?width=5451&amp;table=block&amp;id=b28a3d2f-37ea-4262-8fd1-27f20b7387a1" style="width:100%"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div><h3 id="https://www.notion.so/dd89afecedd24bd59d054d3e8d8de785" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--3"><a class="Anchor" href="#https://www.notion.so/dd89afecedd24bd59d054d3e8d8de785"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Fully Lost Entree</span></span></h3><div id="https://www.notion.so/419c9064779a463b8720ea713f3b15ad" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">When an entree falls of the conveyance system and spills into the bottom of the cabinet, it is considered fully lost. Similar to a partial lost entree, manual assembly is required. In this case, the entire entree must be manually created by you.</span></span></p></div><div id="https://www.notion.so/f3d8a7648ad44453935704737e2cb563" class="Image Image--Normal"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F32eb4f16-a8a0-44fa-a1bb-f0e372b7a7c9%2FSystem_Fault_with_Partial_Purge-1.png?width=336&amp;table=block&amp;id=f3d8a764-8ad4-4453-9357-04737e2cb563"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F32eb4f16-a8a0-44fa-a1bb-f0e372b7a7c9%2FSystem_Fault_with_Partial_Purge-1.png?width=336&amp;table=block&amp;id=f3d8a764-8ad4-4453-9357-04737e2cb563" style="width:336px"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div><div id="https://www.notion.so/d94d5d696e0f4d548f00bacd1eb2aae5" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div></article>
+  <footer class="Footer">
+  <div>&copy; [CCC] SOP Articles 2022</div>
+  <div>&centerdot;</div>
+  <div>Powered by <a href="https://github.com/dragonman225/notablog" target="_blank"
+      rel="noopener noreferrer">Notablog</a>.
+  </div>
+</footer>
+</body>
+
+</html>

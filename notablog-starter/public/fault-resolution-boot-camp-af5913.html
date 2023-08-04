@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- iOS Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Chrome, Firefox OS and Opera Status Bar Color -->
+<meta name="theme-color" content="#FFFFFF">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+<link rel="stylesheet" type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism.min.css">
+<link rel="stylesheet" type="text/css" href="css/SourceSansPro.css">
+<link rel="stylesheet" type="text/css" href="css/theme.css">
+<link rel="stylesheet" type="text/css" href="css/notablog.css">
+<!-- Favicon -->
+
+<style>
+  :root {
+    font-size: 20px;
+  }
+</style>
+  <title>Fault Resolution Boot Camp&nbsp;|&nbsp;[CCC] SOP Articles</title>
+  <meta property="og:type" content="blog">
+  <meta property="og:title" content="Fault Resolution Boot Camp">
+  
+  
+  <style>
+    .DateTagBar {
+      margin-top: 1.0rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <nav class="Navbar">
+  <a href="index.html">
+    <div class="Navbar__Btn">
+      
+      <span>Home</span>
+    </div>
+  </a>
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="fault-resolution-boot-camp-af5913.html">
+        <div class="Navbar__Btn">
+          
+          <span>Fault Resolution Boot Camp</span>
+        </div>
+      </a>
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="makeline-basics-41f4f4.html">
+        <div class="Navbar__Btn">
+          
+          <span>Makeline Basics</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="cabinet-screens-1e5755.html">
+        <div class="Navbar__Btn">
+          
+          <span>Cabinet Screens</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="lift-screen-85bca5.html">
+        <div class="Navbar__Btn">
+          
+          <span>Lift Screen</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="system-states-f92089.html">
+        <div class="Navbar__Btn">
+          
+          <span>System States</span>
+        </div>
+      </a>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+</nav> -->
+  <header class="Header">
+    
+    <div class="Header__Spacer Header__Spacer--NoCover">
+    </div>
+    
+    <h1 class="Header__Title">Fault Resolution Boot Camp</h1>
+    
+      <div class="DateTagBar">
+        
+        
+          <span class="DateTagBar__Item DateTagBar__Tag DateTagBar__Tag--gray">
+            <a href="tag/test.html">test</a>
+          </span>
+        
+      </div>
+    
+  </header>
+  <article id="https://www.notion.so/af591314fddf446d99fa48748824e11c" class="PageRoot"><h3 id="https://www.notion.so/cb17a8b9633741b3b62023146ff48566" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--3"><a class="Anchor" href="#https://www.notion.so/cb17a8b9633741b3b62023146ff48566"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Overview</span></span></h3><div id="https://www.notion.so/a5dd8ff9e80047ac9d31643eb02bd2f4" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The Makeline has a collection of screens and lighting devices used to assist you in operation. The screens work independently to provide useful information about and control over the Makeline. Then, if an issue arises, the screens work together with the lights to support you in fault identification and resolution. </span></span></p></div><div id="https://www.notion.so/6e33bb19622644de99a25acb2d6bb3f6" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">General Resolution Process</strong></span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/e1b94dcf692e4b498492856894f98e2c" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">A fault is indicated on the lights and/or screens.</span></span><ol class="NumberedListWrapper"><li id="https://www.notion.so/98657f8d2d9948b181fe4967a49fe4ad" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Automation continues</span></span></li></ol></li><li id="https://www.notion.so/e3cf2dd842ae4dd197c8fe46d0bdcc31" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Take necessary action to resolve the fault</span></span></li><li id="https://www.notion.so/3b3e74630f3d4a24b7a0d763bd289024" class="NumberedList" value="3"><span class="SemanticStringArray"><span class="SemanticString">Confirm the fault is resolved by pressing the button on the Cabinet Screen</span></span><ol class="NumberedListWrapper"><li id="https://www.notion.so/1edc69fbb29a42828bae46d0ff1f4a4b" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">If the fault can be addressed quickly, confirmation is given on the cabinet screen and automation resumes.</span></span></li><li id="https://www.notion.so/c32535c528f04b5e8e2d866c14da9c6a" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">If the fault persists, then the Makeline moves into a System Faulted state and the Makeline stops.</span></span></li></ol></li><li id="https://www.notion.so/2bb50af9f7c74366b85b713e4cb2c696" class="NumberedList" value="4"><span class="SemanticStringArray"><span class="SemanticString">Once the System Fault is addressed, the resolution is confirmed on the Lift Screen, and automation resumes.</span></span></li></ol><div id="https://www.notion.so/992a7bb01ba940ee8b1d4bd9d8cc79d8" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/af428543145949fdba128454ee7c8a54" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/c76ed60a38ea4eeaa2095bb902a88b78" class="Divider"></div><div id="https://www.notion.so/035e81353a304760bf53350b0ddb06c1" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><h3 id="https://www.notion.so/698a1a849543430ea5ad04d51d1610b1" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--3"><a class="Anchor" href="#https://www.notion.so/698a1a849543430ea5ad04d51d1610b1"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Device Descriptions</span></span></h3><div id="https://www.notion.so/7d817fe6ab8744209e3abd97eea3a653" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Screens</strong></span></span></p></div><div id="https://www.notion.so/a8d1abb794774173b4888e934cb25f93" class="ColumnList"><div id="https://www.notion.so/8987e23942114693832f1d943310be0d" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.4375)"><div id="https://www.notion.so/4aa54e127314424296ed71d12067f0ea" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Lift Screen</span></span></p></div><div id="https://www.notion.so/8d7db42d45734aeabfe4c9084af76dda" class="Image Image--Normal"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F203639e9-6599-4462-b3ad-d993a2e7293f%2Flift_CTA.png?width=192&amp;table=block&amp;id=8d7db42d-4573-4aea-bfe4-c9084af76dda"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F203639e9-6599-4462-b3ad-d993a2e7293f%2Flift_CTA.png?width=192&amp;table=block&amp;id=8d7db42d-4573-4aea-bfe4-c9084af76dda" style="width:192px"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div><div id="https://www.notion.so/808f68582ffb4d5e93db74d26637e019" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Description</strong></span></span></p></div><div id="https://www.notion.so/ce529ab68c0a436e86697a116935ac9d" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The Lift Screen, is a 10” touch screen whose main purpose is to provide the you feedback as to the current state of the system, and facilitate state switching when appropriate.</span></span></p></div><div id="https://www.notion.so/57f1125ef4494d15aadd412e70e74951" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"> </span></span></p></div><div id="https://www.notion.so/627cab34cc7f4845b630a647eb419de5" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Use case(s):</strong></span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/0e57fa6105d84d428ed0d24cbe839b9a" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">System state status</span></span></li><li id="https://www.notion.so/5bcc5cda8d054c7eabbafa7068869f26" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Entree assembly status</span></span></li><li id="https://www.notion.so/1465c5d5f0df4530945854319df43e45" class="NumberedList" value="3"><span class="SemanticStringArray"><span class="SemanticString">System state control</span></span></li><li id="https://www.notion.so/9e18beecd3fb45f8aed3821457269e79" class="NumberedList" value="4"><span class="SemanticStringArray"><span class="SemanticString">Lift control</span></span></li><li id="https://www.notion.so/7a9aeef7fc9c46519c4e3b06468cc089" class="NumberedList" value="5"><span class="SemanticStringArray"><span class="SemanticString">System-level fault resolution</span></span></li></ol></div><div id="https://www.notion.so/e17276bdeb9042ebb86c0d7097976c56" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.5625)"><div id="https://www.notion.so/c1f43528ad8f4d7993d0c79694a6b5db" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Cabinet Screens</span></span></p></div><div id="https://www.notion.so/d57647a1f7e1413dab8a6ee35643c5ef" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Description</strong></span></span></p></div><div id="https://www.notion.so/7f405272df7d480584cde8e18d392162" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Each cabinet on the Makeline has a touch screen to provide the current and target temperatures of the cabinet (except for the Denester and Lift), and facilitate fault resolution when applicable. </span></span></p></div><div id="https://www.notion.so/54091d1c10004e3e8e4923df541c5e61" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/9b074d912dc24719a4b2bc1a25bc6df3" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Use case(s):</strong></span></span></p></div><div id="https://www.notion.so/694de57277ec4e82ae4ba4b1fc2a9484" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Dispenser cabinets</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/badc7db6c9164ec88dad683f75c62a12" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Display current cabinet temperature</span></span></li><li id="https://www.notion.so/008e2db9eeaa449ebed03ef27caa5823" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Set cabinet temperature</span></span></li><li id="https://www.notion.so/0e7ec1d358994cbeb402f5a5d0db9009" class="NumberedList" value="3"><span class="SemanticStringArray"><span class="SemanticString">Display ingredient supply level</span></span></li><li id="https://www.notion.so/696c695ba7814e21b337e8b62844a30b" class="NumberedList" value="4"><span class="SemanticStringArray"><span class="SemanticString">Fault information and resolution</span></span></li></ol><div id="https://www.notion.so/48116714c61e49d28503d2107033106e" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/5df2542dec444ae2bce46af91acac654" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Denester cabinets</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/d6275b7a423949a98d162c303dbfc385" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Bowl supply level indicator</span></span></li><li id="https://www.notion.so/c26b148ae34142e09a8260521beb28cd" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Fault information and resolution</span></span></li></ol><div id="https://www.notion.so/b4634f4fa7fe46fdb940696f72b89505" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/4230b0c1347d4080a16ee20707f992ed" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Lift cabinets</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/3e1854c98b4e45788cccc0d90eeed9d2" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Item on lift information</span></span></li><li id="https://www.notion.so/190a275185a047b99f32acbef3db6d50" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Manual control to raise lift</span></span></li><li id="https://www.notion.so/c3320b096bb348f09fd60b75fad89b1c" class="NumberedList" value="3"><span class="SemanticStringArray"><span class="SemanticString">Fault information and resolution</span></span></li></ol></div></div><div id="https://www.notion.so/4b81c3e50ec0494cacaaa3bd35f3621a" class="ColumnList"><div id="https://www.notion.so/6df9bf0c81e648528c4aff49ad2ab811" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.4375)"><div id="https://www.notion.so/08aab48f7edf435c9df5c147a0d02021" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div></div><div id="https://www.notion.so/8b4e552cca3b410f8fc8fd52ecbeb269" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.5625)"><div id="https://www.notion.so/4c1935f73161460fbec158af4e4bf86b" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div></div></div><div id="https://www.notion.so/9c521baaf80d4094a09d17f5ae3330ca" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/3132a8d727764ab5b96dc2df68e3f7f3" class="Divider"></div><div id="https://www.notion.so/3ed240333a00487cad5d0cf1bd035221" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString"><strong class="SemanticString__Fragment SemanticString__Fragment--Bold">Lights</strong></span></span></p></div><div id="https://www.notion.so/1b944963141e41898cd6366aba1912dc" class="ColumnList"><div id="https://www.notion.so/9e5e0d8a89cb453b8ab6d3d6940e1213" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.5)"><div id="https://www.notion.so/07104a85d0d34e1eb903f8f5987b0abe" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Counter Lights</span></span></p></div><div id="https://www.notion.so/58d56449a217456d800e6ce889a32886" class="Image Image--PageWidth"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F3681a3ac-31a1-4668-bdd9-a0379f2a1f4e%2Fmakelights_counter.png?width=1749&amp;table=block&amp;id=58d56449-a217-456d-800e-6ce889a32886"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F3681a3ac-31a1-4668-bdd9-a0379f2a1f4e%2Fmakelights_counter.png?width=1749&amp;table=block&amp;id=58d56449-a217-456d-800e-6ce889a32886" style="width:100%"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div><div id="https://www.notion.so/ddf0a15af7b749dba77523aca3ae8066" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Description</span></span></p></div><div id="https://www.notion.so/15fd9cd8bef54582b0682630b287b948" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Each cabinet, at counter level, has a segmented ring of light that encircles each group of dispensers. They can be lighted in varied patterns and colors to communicate location and type of fault at hand.</span></span></p></div><div id="https://www.notion.so/880f208bf08b4366bea07e5a57c4c697" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/08216e71b2cf451fa7ad78a3321ae625" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Use case(s):</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/bdd193c9bf144c1397ffcc584e55b898" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Alert the user to a device-level fault </span></span></li><li id="https://www.notion.so/7428b9b101274c708b0cce236dd0954c" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Indicate to the user the specific physical location of a device fault</span></span></li></ol></div><div id="https://www.notion.so/c925836319f0419d901ac9bcf99c1270" class="Column" style="width:calc((100% - var(--column-spacing) * 1) * 0.5)"><div id="https://www.notion.so/3ea0e95c276f49b4b05cbcf5ac6c4ee9" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Cabinet Lights</span></span></p></div><div id="https://www.notion.so/8e6c4e41f6ea4694831ea177dafb1d50" class="Image Image--PageWidth"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F5713d3a4-f7c1-4091-b804-88b7858f69ab%2Fmakelights_cabinet.png?width=1749&amp;table=block&amp;id=8e6c4e41-f6ea-4694-831e-a177dafb1d50"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F5713d3a4-f7c1-4091-b804-88b7858f69ab%2Fmakelights_cabinet.png?width=1749&amp;table=block&amp;id=8e6c4e41-f6ea-4694-831e-a177dafb1d50" style="width:100%"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div><div id="https://www.notion.so/455b77ef0ba745f3be8aeeb95c3b7c95" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Description</span></span></p></div><div id="https://www.notion.so/76b2f0de78a1403681e97e07e1c5219d" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">The Lift and Denester cabinets don’t possess counter lighting, but instead , have a bar of light located above the cabinet screen. They serve the same purpose as the counter lighting, notifying you when an issue arises. </span></span></p></div><div id="https://www.notion.so/119f6b15fd9d458bbdc32f1caf5f81ff" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/9f9cff15db334b8c986b384ac9e4fdda" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Use case(s):</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/5ca3345f930642b69a3c2cb65cde7bd4" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Alert the user to a device-level fault</span></span></li><li id="https://www.notion.so/e8bf9d84648b4f72be6cf2059f62b582" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Alert the user when an item is ready to raised on the Lift.</span></span></li></ol></div></div><div id="https://www.notion.so/521b4613bd924dc6b90888430693c7b9" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/f9e7ba59436f4e489e14e634a7b37244" class="Divider"></div><div id="https://www.notion.so/ee0bf0051bd04f88988eeee8d43fce83" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><h3 id="https://www.notion.so/1faceb8465604fcdb262ad29829ac59e" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--3"><a class="Anchor" href="#https://www.notion.so/1faceb8465604fcdb262ad29829ac59e"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString"><span class="SemanticString__Fragment SemanticString__Fragment--Commented">Multi-Device Fault Alerting</span></span></span></h3><div id="https://www.notion.so/f981e423d30c4d5abf6f7d8f6d58d882" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Below is an example of the four devices working together to communicate a basic fault. The particular example depicted is a dispenser fault.</span></span></p></div><div id="https://www.notion.so/cee56e71e1c5461cbfbda1d6ab232915" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/e80b976c0d7447279688c8929ada1d81" class="Image Image--PageWidth"><figure><a href="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F4c5f9c8e-ebfe-4814-8fdb-35988807b361%2Fbasic_example_feedback_devices.png?width=1124&amp;table=block&amp;id=e80b976c-0d74-4727-9688-c8929ada1d81"><img src="https://www.notion.so/signed/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F4c5f9c8e-ebfe-4814-8fdb-35988807b361%2Fbasic_example_feedback_devices.png?width=1124&amp;table=block&amp;id=e80b976c-0d74-4727-9688-c8929ada1d81" style="width:100%"/></a><figcaption><span class="SemanticStringArray"></span></figcaption></figure></div><div id="https://www.notion.so/c794b36d247d4aea8c2a8bd36d55924b" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div></article>
+  <footer class="Footer">
+  <div>&copy; [CCC] SOP Articles 2022</div>
+  <div>&centerdot;</div>
+  <div>Powered by <a href="https://github.com/dragonman225/notablog" target="_blank"
+      rel="noopener noreferrer">Notablog</a>.
+  </div>
+</footer>
+</body>
+
+</html>

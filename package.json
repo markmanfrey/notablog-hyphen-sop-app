@@ -21,9 +21,11 @@
     "mongodb": "^5.6.0",
     "mongoose": "^7.3.1",
     "multer": "^1.4.5-lts.1",
+    "notionapi-agent-token": "file:../notionapi-agent-token",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "redis": "^4.6.7",
     "systemctl": "^0.2.2",
     "web-vitals": "^3.3.2"
   },
@@ -50,5 +52,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "browser": {
+    "child_process": false
   }
 }

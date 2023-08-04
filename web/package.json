@@ -1,0 +1,43 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "heroku-postbuild": "npm install && cd client && npm install && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "browserify-zlib": "^0.2.0",
+    "child_process": "^1.0.2",
+    "crypto-browserify": "^3.12.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "ioredis": "^5.3.2",
+    "path": "^0.12.7",
+    "path-browserify": "^1.0.1",
+    "react": "^18.2.0",
+    "react-app-rewired": "^2.2.1",
+    "react-dom": "^18.2.0",
+    "redis": "^4.6.7",
+    "redis-server": "^1.2.2",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.1",
+    "webpack": "^5.88.1"
+  },
+  "paths": {
+    "url": [
+      "./node_modules/url"
+    ]
+  },
+  "browser": {
+    "child_process": false
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.1.4"
+  }
+}
