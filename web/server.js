@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const port = process.env.PORT || 3000;
 const path = require('path');
 const { exec } = require('child_process');
 const { execFile } = require('child_process');
@@ -81,9 +83,9 @@ if(process.env.NODE_ENV != "production"){
 }
 //App will run on process.env.PORT by default. Must specify or Heroku uses its default port
 //It runs on port 4000 only if process.env.PORT is not defined
-const listener = app.listen(process.env.PORT || 3000, () => {
-    if(process.env.PORT !== undefined){
-        console.log(`App running on process.env.PORT     ${process.env.PORT}`);
+const listener = app.listen(port || 3000, () => {
+    if(port !== undefined){
+        console.log(`App running on process.env.PORT     ${port}`);
     } else {
          console.log(`App running on PORT 4000`);
     }
