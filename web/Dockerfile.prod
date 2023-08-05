@@ -33,4 +33,4 @@ RUN npm install --prefix client
 #Builds React app
 RUN npm run --prefix client build
 #Runs the app when container launches. Same as running in console
-CMD ["npm", , "--experimental-modules ", "--experimental-lexer", "start"]
+CMD ["npm", , "--experimental-modules ", "start"]

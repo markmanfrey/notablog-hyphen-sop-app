@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node --experimental-modules --experimental-lexer server.js",
+    "start": "node --experimental-modules server.js",
     "heroku-postbuild": "npm install && cd client && npm install && npm run build",
     "test": "echo \"Skipping tests\" && exit 0"
   },
