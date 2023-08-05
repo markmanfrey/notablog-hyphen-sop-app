@@ -1,0 +1,16 @@
+{
+    "expo": {
+      "name": "notion-hyphen-sop-app",
+      "slug": "notion-hyphen-sop-app"
+    },
+    "environments": {
+        "test": {
+          "formation": {
+              "test": {
+                "quantity": 1,
+                "size": "standard-1x"
+              }
+          }
+       }
+    }
+  }
