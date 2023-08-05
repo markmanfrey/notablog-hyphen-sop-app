@@ -8,6 +8,16 @@
     "heroku-postbuild": "npm install && cd client && npm install && npm run build",
     "test": "echo \"Skipping tests\" && exit 0"
   },
+  "environments": {
+    "test": {
+      "formation": {
+          "test": {
+            "quantity": 1,
+            "size": "standard-1x"
+          }
+      }
+   }
+},
   "author": "",
   "license": "ISC",
   "dependencies": {
