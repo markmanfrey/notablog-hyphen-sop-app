@@ -1,24 +1,15 @@
 // App.js
 
-import React, { useState, useEffect } from 'react';
-
-/* function App() {
-  const [output, setOutput] = useState('');
-
-  useEffect(() => {
-    fetch('server/testResp')
-      .then(res => res.text())
-      .then(data => setOutput(data));
-  }, []); */
+import React, { useState } from 'react';
 
   function App(props) {
-    const [output, setOutput] = useState('');
+    const [setOutput] = useState('');
   
-    const runCommand = async () => {
-      const response = await fetch('server/testResp');
-      const data = await response.text();
-      setOutput(data);
-    }
+    // async function runCommand() {
+    //   const response = await fetch('server/testResp');
+    //   const data = await response.text();
+    //   setOutput(data);
+    // }
 
     const queryExpress = () => {
       fetch("/server/testResp/", {method: "GET"})
