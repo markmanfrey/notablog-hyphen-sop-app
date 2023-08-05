@@ -13,4 +13,4 @@ services:
       app:
         image: node:20.3.1
     command:
-      node --experimental-modules start
+      ./node_modules/.bin/npm start
