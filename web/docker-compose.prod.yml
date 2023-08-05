@@ -9,3 +9,5 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - '1337:80'
+    command:
+      node --experimental-lexer start
