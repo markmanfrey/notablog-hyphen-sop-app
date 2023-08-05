@@ -94,48 +94,22 @@ const listener = app.listen(port || 3000, () => {
 
  //import mongoose
  const mongoose = require('mongoose');
+ var settings = {
+  family: 4};
 
-
-//  const connectDB = async () => {
-//     try {
-//         //mongoose.set('strictQuery', false);
-//         await mongoose.connect(process.env.MONGODB_URI,
-//           { family: 4, 
-//           server: {socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 }},
-//           replset: {socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 }}});
-//     (err) => {
-//         if (err) return console.log("Error: ", err);
-//         console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
-//     }
-//     } catch (error) {
-//         console.error(error.message);
-//         process.exit(1);
-//     }
-//   }
-
-const connectDB = async () => {
-  try {
-  mongoose.connect(
-    process.env.MONGODB_URI,
-    {
-      useFindAndModify: false,
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
-      replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
-    },
-    function (err) {
-      if (err) return console.log("Error: ", err);
-      console.log(
-        "MongoDB Connection -- Ready state is:",
-        mongoose.connection.readyState
-      );
+ const connectDB = async () => {
+    try {
+        //mongoose.set('strictQuery', false);
+        await mongoose.connect(process.env.MONGODB_URI, settings)
+        if (err) {
+            if (err) return console.log("Error: ", err);
+            console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
+        }
+    } catch (error) {
+        console.error(error.message);
+        process.exit(1);
     }
-  )} catch (error) {
-  console.error(error.message);
-  process.exit(1);
   }
-}
+
 
 connectDB();
