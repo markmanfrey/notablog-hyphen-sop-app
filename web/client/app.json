@@ -1,0 +1,16 @@
+{
+    "expo": {
+      "name": "My app",
+      "slug": "my-app"
+    },
+    "environments": {
+        "test": {
+          "formation": {
+              "test": {
+                "quantity": 1,
+                "size": "standard-1x"
+              }
+          }
+       }
+    }
+  }

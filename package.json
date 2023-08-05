@@ -42,16 +42,6 @@
       "react-app/jest"
     ]
   },
-  "environments": {
-    "test": {
-      "formation": {
-          "test": {
-            "quantity": 1,
-            "size": "standard-1x"
-          }
-      }
-   }
-},
   "browserslist": {
     "production": [
       ">0.2%",
