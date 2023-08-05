@@ -14,5 +14,8 @@ services:
       - 3001:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
+    services:
+      app:
+        image: node:20.3.1
     command:
       node --experimental-lexer start
