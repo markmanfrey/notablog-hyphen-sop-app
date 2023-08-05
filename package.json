@@ -32,8 +32,9 @@
   "scripts": {
     "start": "node server.js",
     "build": "react-scripts build",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "heroku-postbuild": "npm install && cd client && npm install && npm run build",
+    "test": "echo \"Skipping tests\" && exit 0"
   },
   "eslintConfig": {
     "extends": [
