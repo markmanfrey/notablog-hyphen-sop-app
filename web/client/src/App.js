@@ -1,9 +1,7 @@
 // App.js
 
-import React, { useState } from 'react';
 
   function App(props) {
-    const [setOutput] = useState('');
   
     // async function runCommand() {
     //   const response = await fetch('server/testResp');
