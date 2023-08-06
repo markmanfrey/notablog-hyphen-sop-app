@@ -18,6 +18,7 @@
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "helmet": "^7.0.0",
+    "ioredis": "^5.3.2",
     "mongodb": "^5.6.0",
     "mongoose": "^7.4.2",
     "multer": "^1.4.5-lts.1",
@@ -27,6 +28,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "redis": "^4.6.7",
+    "redis-client": "^0.3.5",
     "redis-server": "^1.2.2",
     "systemctl": "^0.2.2",
     "web-vitals": "^3.3.2"
