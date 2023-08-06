@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.post('/notionHtml/:pageId', async (req, res) => {
     const args = process.argv.slice(2); // Remove the first two elements (node executable and script name)
-    const workDir = "../../notablog-starter/"; // The first argument should be the workDir
+    const workDir = "./notablog-starter/"; // The first argument should be the workDir
     const pageIdToPublish = args[1]; // The second argument should be the pageIdToPublish
   
     const html = await generate(workDir, pageIdToPublish); // Replace 'page123' with the desired pageId
