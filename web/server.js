@@ -9,7 +9,7 @@ const { execFile } = require('child_process');
 const router = require('./routes/notionHtml'); // import the routes
 require('dotenv').config(); //Required to access .env files
 const { generateHTML } = require('./controllers/notionHtml');
-const { generate } = require('../notablog-app/dist/index');
+const { generate } = require('../../notablog-hyphen-sop-app/notablog-app/dist/index');
 
 app.use(express.json());
 app.use('/', router); //to use the routes
