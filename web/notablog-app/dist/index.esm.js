@@ -1,6 +1,6 @@
 import fs, { promises } from 'fs';
 import path from 'path';
-import { createAgent } from 'notionapi-agent-token';
+import { createAgent } from 'notionapi-agent';
 import { TaskManager2 } from '@dnpr/task-manager';
 import { copyDirSync } from '@dnpr/fsutil';
 import crypto from 'crypto';

@@ -1,4 +1,4 @@
-import { createAgent } from 'notionapi-agent-token';
+import { createAgent } from 'notionapi-agent';
 import { Config } from './config';
 import { SiteContext } from './types';
 /** Extract interested data for blog generation from a Notion table. */

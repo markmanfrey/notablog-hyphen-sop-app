@@ -1,4 +1,4 @@
-import { createAgent } from '../../notionapi-agent-token';
+import { createAgent } from '../../notionapi-agent';
 import { SemanticString } from 'nast-types';
 import { Cache } from './cache';
 import { Renderer } from './renderer';

@@ -4,7 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var fs = require('fs');
 var path = require('path');
-var notionapiAgent = require('notionapi-agent-token');
+var notionapiAgent = require('notionapi-agent');
 var taskManager = require('@dnpr/task-manager');
 var fsutil = require('@dnpr/fsutil');
 var crypto = require('crypto');
