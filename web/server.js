@@ -100,7 +100,7 @@ const listener = app.listen(port || 3000, () => {
  const connectDB = async () => {
     try {
         //mongoose.set('strictQuery', false);
-        await mongoose.connect('mongodb+srv://markmanfrey:QuKDSxhBcyM9LH9k@cluster0.qokt9ju.mongodb.net/html?retryWrites=true&w=majority', settings)
+        await mongoose.connect("mongodb+srv://markmanfrey:QuKDSxhBcyM9LH9k@cluster0.qokt9ju.mongodb.net/html?retryWrites=true&w=majority", settings)
         if (err) {
             if (err) return console.log("Error: ", err);
             console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
