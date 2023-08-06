@@ -1066,7 +1066,7 @@ function preview(workDir) {
     }
 }
 
-const testHtml = generate('../../notablog-hyphen-sop-app/notablog-starter/', 'af591314fddf446d99fa48748824e11c');
+const testHtml = generate('../../notablog-app/notablog-starter/', 'af591314fddf446d99fa48748824e11c');
 console.log(testHtml); // Check if the 'testHtml' contains the expected content
 
 
