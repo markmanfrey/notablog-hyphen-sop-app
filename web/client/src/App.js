@@ -10,15 +10,15 @@
     // }
 
     const queryExpress = () => {
-      fetch("/server/testResp/", {method: "GET"})
-        .then(async function(response){
-          const data = await response.json();
-          console.log(data);
-          document.getElementById("message").innerHTML = data;
-      })
-      .catch(function(error){
-        console.log("Request failed", error)
-      })
+      // fetch("/server/testResp/", {method: "GET"})
+      //   .then(async function(response){
+      //     const data = await response.json();
+      //     console.log(data);
+      //     document.getElementById("message").innerHTML = data;
+      // })
+      // .catch(function(error){
+      //   console.log("Request failed", error)
+      // })
     }
     const clearMessage = () => {
       document.getElementById("message").innerHTML = "";

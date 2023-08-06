@@ -35,23 +35,23 @@ app.post('/notionHtml/:pageId', async (req, res) => {
   // send response  });
 //app.get("/server/testResp", testResp)
 
-async function testResp (req, res) {
-    //console.log('Request for data received by Express backend');
-    //const command = 'notablog-app generate ../notablog-starter/ af591314fddf446d99fa48748824e11c --fresh'; // replace with your command
-    execFile(__dirname + '/client/src/notablog-app-script.sh', (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
-      //res.send(`Command output: ${stdout}`);
-      console.log(stdout);
-      //res.status(200).json(`String sent by Express backend ${stdout}`);
-    });
-}
+// async function testResp (req, res) {
+//     //console.log('Request for data received by Express backend');
+//     //const command = 'notablog-app generate ../notablog-starter/ af591314fddf446d99fa48748824e11c --fresh'; // replace with your command
+//     execFile(__dirname + '/client/src/notablog-app-script.sh', (error, stdout, stderr) => {
+//       if (error) {
+//         console.error(`exec error: ${error}`);
+//         return;
+//       }
+//       if (stderr) {
+//         console.error(`stderr: ${stderr}`);
+//         return;
+//       }
+//       //res.send(`Command output: ${stdout}`);
+//       console.log(stdout);
+//       //res.status(200).json(`String sent by Express backend ${stdout}`);
+//     });
+// }
 if(process.env.NODE_ENV != "production"){
     app.get('/server/', async function(req, res){
          console.log('Main page loading...');
