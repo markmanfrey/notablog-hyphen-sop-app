@@ -94,22 +94,30 @@ const listener = app.listen(port || 3000, () => {
  //import mongoose
  const mongoose = require('mongoose');
  var settings = {
-  family: 4
+  family: 4,
+  seNewUrlParser: true
 };
 
  const connectDB = async () => {
+    let err;
     try {
         //mongoose.set('strictQuery', false);
         await mongoose.connect("mongodb+srv://markmanfrey:QuKDSxhBcyM9LH9k@cluster0.qokt9ju.mongodb.net/html?retryWrites=true&w=majority", settings)
-        if (err) {
-            if (err) return console.log("Error: ", err);
+
             console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
-        }
-    } catch (err) {
-        console.error(err.message);
-        process.exit(1);
+
+    } catch (error) {
+      err = error;
+      console.error('Error connecting to MongoDB', error);
     }
-  }
+  
+    return err;
+};
+
+const error = await connectDB();
 
 
-connectDB();
+if (error) {
+  console.log('Error connecting to MongoDB: ')
+  console.error(err)
+}
