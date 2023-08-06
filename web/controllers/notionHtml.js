@@ -45,10 +45,11 @@ const getOnehtmlX = async (req, res) => {
 //export controller functions
 //module.exports = {getOnehtmlX};
 
-async function generateHTML (pageId){
+async function generateHTML (req, res){
+    let pageId = req.params.pageId;
     const args = process.argv.slice(2); // Remove the first two elements (node executable and script name)
     const workDir = args[0]; // The first argument should be the workDir
-    const pageIdToPublish = args[1]; // The second argument should be the pageIdToPublish
+    const pageIdToPublish = pageId; // The second argument should be the pageIdToPublish
   // Check if the required arguments are provided
   if (!workDir || !pageIdToPublish) {
     console.error('Usage: node main.js <workDir> <pageIdToPublish>');

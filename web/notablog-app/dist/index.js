@@ -1039,7 +1039,8 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     //     React.createElement(MyComponent)
     //   );
     //const html = ReactDOMServer.renderToString(provider);
-    html = encodeURIComponent(returnValuePost);
+    //html = encodeURIComponent(returnValuePost);
+    html = returnValuePost;
     //console.log(html);
     return html;
 }
