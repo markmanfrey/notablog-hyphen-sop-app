@@ -105,8 +105,8 @@ const listener = app.listen(port || 3000, () => {
             if (err) return console.log("Error: ", err);
             console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
         }
-    } catch (error) {
-        console.error(error.message);
+    } catch (err) {
+        console.error(err.message);
         process.exit(1);
     }
   }
