@@ -1,4 +1,5 @@
-require('dotenv').config();
+require('dotenv').config(); //Required to access .env files
+const mongodb = require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -7,7 +8,6 @@ const path = require('path');
 const { exec } = require('child_process');
 const { execFile } = require('child_process');
 const router = require('./routes/notionHtml'); // import the routes
-require('dotenv').config(); //Required to access .env files
 const { generateHTML } = require('./controllers/notionHtml');
 const { generate } = require('./notablog-app/dist/index');
 
@@ -100,7 +100,7 @@ const listener = app.listen(port || 3000, () => {
  const connectDB = async () => {
     try {
         //mongoose.set('strictQuery', false);
-        await mongoose.connect(process.env.MONGODB_URI, settings)
+        await mongoose.connect(mongodb, settings)
         if (err) {
             if (err) return console.log("Error: ", err);
             console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
