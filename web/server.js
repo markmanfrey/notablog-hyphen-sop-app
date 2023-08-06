@@ -98,7 +98,7 @@ const listener = app.listen(port || 3000, () => {
   seNewUrlParser: true
 };
 
- const connectDB = async () => {
+ const connectDBrun = async () => {
     let err;
     try {
         //mongoose.set('strictQuery', false);
@@ -114,10 +114,15 @@ const listener = app.listen(port || 3000, () => {
     return err;
 };
 
-const error = await connectDB();
+async function connectDB() {
 
+  const error = await connectDBrun();
 
-if (error) {
-  console.log('Error connecting to MongoDB: ')
-  console.error(err)
+  if(error) {
+    // handle error
+    console.log('Error connecting to MongoDB: ');
+    console.error(err);
+  }
 }
+
+connectDB();
