@@ -7,8 +7,8 @@ const express = require("express");
 const React = require('react','useContext');
 const {useState, useEffect} = require('react');
 const ReactDOMServer = require ('react-dom/server');
-const Redis = require('ioredis');
-const redis = require('../redis-client');
+//const Redis = require('ioredis');
+//onst redis = require('../redis-client');
 //const { generate, preview } = require('../../notablog-app/dist/index');
 const generate = require('../notablog-app/dist/index');
 

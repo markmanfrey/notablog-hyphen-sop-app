@@ -17,9 +17,9 @@ var visit = require('unist-util-visit');
 var child_process = require('child_process');
 const React = require('react'); 
 const { useContext } = React;
-let redis = require('../../../web/redis-client');
+//let redis = require('../../../web/redis-client');
 const ReactDOMServer = require ('react-dom/server');
-const MyContext = require('../../../web/context');
+//const MyContext = require('../../../web/context');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -1007,37 +1007,37 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     //redis.set('returnValue', JSON.stringify(returnValue));
     // await redis.set('key', JSON.stringify(returnValue));
     // const result = await redis.get('key');
-    const MyContext = React.createContext({
-        value: '',
-        setValue: (newValue) => {} // update state 
-      });
-    const MyComponent = () => {
-        const {setValue} = useContext(MyContext);
-        // Set the context value when the component mounts
-        const html = returnValuePost;
-        React.useEffect(() => {
-            setValue(html);
-          }, [setValue, html]);
-        return null;
-    };
-    const MyContextProvider = ({ children }) => {
-        const [contextValue, setContextValue] = React.useState('');
+    // const MyContext = React.createContext({
+    //     value: '',
+    //     setValue: (newValue) => {} // update state 
+    //   });
+    // const MyComponent = () => {
+    //     const {setValue} = useContext(MyContext);
+    //     // Set the context value when the component mounts
+    //     const html = returnValuePost;
+    //     React.useEffect(() => {
+    //         setValue(html);
+    //       }, [setValue, html]);
+    //     return null;
+    // };
+    // const MyContextProvider = ({ children }) => {
+    //     const [contextValue, setContextValue] = React.useState('');
 
-        const updateContextValue = (newValue) => {
-            setContextValue(newValue);
-          };
+    //     const updateContextValue = (newValue) => {
+    //         setContextValue(newValue);
+    //       };
         
-          return React.createElement(
-            MyContext.Provider,
-            { value: { value: contextValue, setValue: updateContextValue } },
-            children
-          );
-    };
-    const provider = React.createElement(
-        MyContextProvider,
-        {},
-        React.createElement(MyComponent)
-      );
+    //       return React.createElement(
+    //         MyContext.Provider,
+    //         { value: { value: contextValue, setValue: updateContextValue } },
+    //         children
+    //       );
+    // };
+    // const provider = React.createElement(
+    //     MyContextProvider,
+    //     {},
+    //     React.createElement(MyComponent)
+    //   );
     //const html = ReactDOMServer.renderToString(provider);
     html = returnValuePost;
     //console.log(html);
