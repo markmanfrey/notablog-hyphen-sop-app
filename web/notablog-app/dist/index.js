@@ -1066,8 +1066,8 @@ function preview(workDir) {
     }
 }
 
-const testHtml = generate('../../notablog-starter/', 'af591314fddf446d99fa48748824e11c');
-console.log(testHtml); // Check if the 'testHtml' contains the expected content
+//const testHtml = generate('../notablog-starter/', 'af591314fddf446d99fa48748824e11c');
+//console.log(testHtml); // Check if the 'testHtml' contains the expected content
 
 
 module.exports = {
