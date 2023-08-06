@@ -1,5 +1,4 @@
 require('dotenv').config(); //Required to access .env files
-const mongodb = require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -95,12 +94,13 @@ const listener = app.listen(port || 3000, () => {
  //import mongoose
  const mongoose = require('mongoose');
  var settings = {
-  family: 4};
+  family: 4
+};
 
  const connectDB = async () => {
     try {
         //mongoose.set('strictQuery', false);
-        await mongoose.connect(mongodb, settings)
+        await mongoose.connect('mongodb+srv://markmanfrey:QuKDSxhBcyM9LH9k@cluster0.qokt9ju.mongodb.net/html?retryWrites=true&w=majority', settings)
         if (err) {
             if (err) return console.log("Error: ", err);
             console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
