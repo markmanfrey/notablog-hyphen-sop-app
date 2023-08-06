@@ -94,8 +94,7 @@ const listener = app.listen(port || 3000, () => {
  //import mongoose
  const mongoose = require('mongoose');
  var settings = {
-  family: 4,
-  NewUrlParser: true
+  family: 4
 };
 
  const connectDBrun = async () => {
