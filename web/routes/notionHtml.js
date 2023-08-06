@@ -6,7 +6,7 @@ const multer = require('multer');
 const upload = multer();
 
 router.post('/notionHtml/:pageId', upload.none(), function(req, res, next) {
-    notionHtmlController.cacheHTML(req, res, next);
+    //notionHtmlController.cacheHTML(req, res, next);
     next();
 });
 

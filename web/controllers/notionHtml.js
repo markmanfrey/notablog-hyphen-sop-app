@@ -64,34 +64,34 @@ async function generateHTML (pageId){
   }
 }
 
-const cacheHTML = async (req, res, next) => {
-    const { pageId } = req.params;
-    let html;
+// const cacheHTML = async (req, res, next) => {
+//     const { pageId } = req.params;
+//     let html;
 
-    try{
-        html = await redis.get(htmlCacheKey(pageId));
+//     try{
+//         html = await redis.get(htmlCacheKey(pageId));
     
-        if (!html) {
-            html = await generateHTML(pageId);
-            await redis.set(htmlCacheKey(pageId), html); 
-        }
+//         if (!html) {
+//             html = await generateHTML(pageId);
+//             await redis.set(htmlCacheKey(pageId), html); 
+//         }
     
-        res.html = html;
+//         res.html = html;
 
-        res.set('Cache-Control', 'public, max-age=3600');
+//         res.set('Cache-Control', 'public, max-age=3600');
 
-        const output = ReactDOMServer.renderToString(
-            React.createElement(HtmlComponent, { html })  
-        );
+//         const output = ReactDOMServer.renderToString(
+//             React.createElement(HtmlComponent, { html })  
+//         );
 
-        res.send(output);
+//         res.send(output);
         
-        next();
+//         next();
 
-    } catch (err) {
-        // handle error
-    }
-} 
+//     } catch (err) {
+//         // handle error
+//     }
+// } 
 
 function HtmlComponent({ html }) {
     return React.createElement(
@@ -103,7 +103,7 @@ function HtmlComponent({ html }) {
 
 module.exports = {
     generateHTML,
-    cacheHTML: function(req, res, next) {
-      // ...
-    } 
+    // cacheHTML: function(req, res, next) {
+    //   // ...
+    // } 
   }
