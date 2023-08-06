@@ -4,8 +4,8 @@
   "description": "Generate a minimalistic blog from a Notion.so table.",
   "author": "dragonman225",
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
     "noteablog-app": "bin/cli.js"
   },
