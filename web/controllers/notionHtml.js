@@ -10,7 +10,7 @@ const ReactDOMServer = require ('react-dom/server');
 const Redis = require('ioredis');
 const redis = require('../redis-client');
 //const { generate, preview } = require('../../notablog-app/dist/index');
-const generate = require('../../notablog-app/dist/index');
+const generate = require('../notablog-app/dist/index');
 
 //const uploadImg = multer({storage: storage}).single('image');
 //const upload = multer();
