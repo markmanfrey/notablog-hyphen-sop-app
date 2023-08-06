@@ -17,9 +17,9 @@ var visit = require('unist-util-visit');
 var child_process = require('child_process');
 const React = require('react'); 
 const { useContext } = React;
-let redis = require('../../web/redis-client');
+let redis = require('../../../web/redis-client');
 const ReactDOMServer = require ('react-dom/server');
-const MyContext = require('../../web/context');
+const MyContext = require('../../../web/context');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
