@@ -22,7 +22,7 @@ app.post('/notionHtml/:pageId', async (req, res) => {
     const pageIdToPublish = req.params.pageId; // The second argument should be the pageIdToPublish
   
     const html = await generate(workDir, pageIdToPublish); // Replace 'page123' with the desired pageId
-    console.log(html);
+    //console.log(html);
     // Set the content type to 'text/html'
     res.setHeader('Content-Type', 'text/html');
   

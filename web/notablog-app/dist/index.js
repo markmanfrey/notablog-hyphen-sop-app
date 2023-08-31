@@ -5,6 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var fs = require('fs');
 var path = require('path');
 var notionapiAgent = require('notionapi-agent');
+const { Client } = require('@notionhq/client');
 var taskManager = require('@dnpr/task-manager');
 var fsutil = require('@dnpr/fsutil');
 var crypto = require('crypto');
@@ -20,6 +21,10 @@ const { useContext } = React;
 //let redis = require('../../../web/redis-client');
 const ReactDOMServer = require ('react-dom/server');
 //const MyContext = require('../../../web/context');
+const cloudinary = require('cloudinary').v2;
+const request = require('request');
+const probe = require("probe-image-size");
+
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -1001,48 +1006,92 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
         ]));
     });
     await Promise.all(tasks);
-    //const { fork } = require('child_process');
-    //const htmlGenerator = fork('../../notablog-hyphen-sop-app/web/controllers/notionHtml.js');
-    //redisClient.set('returnValue', returnValue);
-    //redis.set('returnValue', JSON.stringify(returnValue));
-    // await redis.set('key', JSON.stringify(returnValue));
-    // const result = await redis.get('key');
-    // const MyContext = React.createContext({
-    //     value: '',
-    //     setValue: (newValue) => {} // update state 
-    //   });
-    // const MyComponent = () => {
-    //     const {setValue} = useContext(MyContext);
-    //     // Set the context value when the component mounts
-    //     const html = returnValuePost;
-    //     React.useEffect(() => {
-    //         setValue(html);
-    //       }, [setValue, html]);
-    //     return null;
-    // };
-    // const MyContextProvider = ({ children }) => {
-    //     const [contextValue, setContextValue] = React.useState('');
 
-    //     const updateContextValue = (newValue) => {
-    //         setContextValue(newValue);
-    //       };
-        
-    //       return React.createElement(
-    //         MyContext.Provider,
-    //         { value: { value: contextValue, setValue: updateContextValue } },
-    //         children
-    //       );
-    // };
-    // const provider = React.createElement(
-    //     MyContextProvider,
-    //     {},
-    //     React.createElement(MyComponent)
-    //   );
-    //const html = ReactDOMServer.renderToString(provider);
-    //html = encodeURIComponent(returnValuePost);
-    html = returnValuePost;
+    
+    //const regex = /((https%)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
+    //const regex = /((https%)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+)/g;
+    //const regex = /(?!.*id=)([a-z0-9/-]){36}/g; //isolate pageID from html string
+    //const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
+    //const regexPageID = /([0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12})/g;
+    //const regexBlockID = /\b(?!apple)\b(?!=)([a-z0-9/-]){36}/g;
+    //const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g;
+    //const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
+    
+    let matchRegexBlockID;
+    let matchregexHtmlHref;
+    let matchRegexPageID;
+    let matchRegexHtmlUrl;
+    let blockId;
+    let block;
+    let imageIdFull;
+    let pageId;
+    const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
+    const regexPageID = /([0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12})/g;
+    const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g;
+    const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
+
+    const notion = new Client({auth: 'secret_xZ2qk4CMTbW15Nso39oavAaKQcZQhiGFaoPVnDixySR'});
+
+    async function processHtml() {
+        try {
+            let newHtml = returnValuePost;
+
+            while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
+                matchRegexBlockID = matchregexHtmlHref[0].match(regexBlockID);
+                matchRegexPageID = matchregexHtmlHref[0].match(regexPageID);
+                matchRegexHtmlUrl = matchregexHtmlHref[0].match(regexHtmlUrl);
+
+                const decodeModule = await import('decode-uri-component');
+                const imageHref = decodeModule.default(matchregexHtmlHref[0]);
+                const imageUID = matchRegexBlockID;
+
+                blockId = imageUID;
+
+                block = await notion.blocks.retrieve({
+                    block_id: blockId
+                });
+
+                imageIdFull = block.image.file.url;
+
+                const cloudinaryURL = await uploadImage(imageIdFull, matchRegexPageID[0]);
+
+                newHtml = newHtml.replace(matchRegexHtmlUrl[0], cloudinaryURL);
+            }
+
+            //console.log("new html ----------------------------- ", newHtml);
+            return newHtml;
+
+        } catch (err) {
+            console.error("Outer error:", err);
+            // Handle the outer error here
+        }
+    }
+
+    async function uploadImage(imageIdFull, pageId) {
+        try {
+            cloudinary.config({
+                cloud_name: 'davkwryyf',
+                api_key: '455536684691436', 
+                api_secret: 'ZtvdFwgkb-_BeVeTCVjKfpQgNLo',
+                upload_preset: 'um0pcnbf'
+            });
+
+            const response = await cloudinary.uploader.upload(imageIdFull, { folder: `test/${pageId}` });
+            //console.log("response >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", response);
+
+            return response.url;
+
+        } catch (err) {
+            console.error("Error during image upload:", err);
+            // Handle the error appropriately, you might choose to return the original imageIdFull
+            return imageIdFull;
+        }
+    }
+
     //console.log(html);
+    const html = await processHtml();
     return html;
+
 }
 /**
  * Open `index` with `bin`.
@@ -1074,5 +1123,4 @@ function preview(workDir) {
 module.exports = {
     generate,
     preview,
-    html,
 }
