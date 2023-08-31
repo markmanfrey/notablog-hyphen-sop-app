@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@notionhq/client": "^2.2.12",
     "body-parser": "^1.20.2",
     "browserify-zlib": "^0.2.0",
     "child_process": "^1.0.2",
