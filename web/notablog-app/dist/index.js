@@ -864,7 +864,7 @@ async function renderPost(task) {
             },
         });
         returnValuePost = pageHTML;
-        console.log("pageHTML in renderPost ",pageHTML);
+        //console.log("pageHTML in renderPost ",pageHTML);
 
         //await fs.promises.writeFile(outPath, pageHTML, { encoding: 'utf-8' });
         //return 0;
@@ -1035,6 +1035,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g;
     const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
     const regexDragonman = /(<div>Powered by*)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(dragonman225)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(<\/div>)/g;
+    
     const notion = new Client({auth: 'secret_xZ2qk4CMTbW15Nso39oavAaKQcZQhiGFaoPVnDixySR'});
 
     //console.log("returnValuePost",returnValuePost);
