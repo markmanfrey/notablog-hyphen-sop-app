@@ -2,6 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+require('dotenv').config();
+
 var fs = require('fs');
 var path = require('path');
 var notionapiAgent = require('notionapi-agent');
@@ -884,7 +886,8 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
     const { concurrency, verbose, ignoreCache } = opts;
     //const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: 'v02%3Auser_token_or_cookies%3AZwQSLj3zP6UG9SShH7mjqS6OhxNUK8Z2bgboaaXhUxnn8xhYrrq_H1juG_hvvgGtNAw9_tYGIju95zzJsrnNeEq2ERvEZOjyC4eiatLSmpCbjuXIrjBTD9ha-pQWLCL3EbIK' });
-    const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: 'v02%3Auser_token_or_cookies%3AGXYK1MbgiAkyh6B8BaFtoySOWF_RD3NzlmrNqx_eV2-fZLrmRsuGLRAR1tKkHpyGlbPLhEB4Xu5IuGQZI0-dR7fHNJW9mqD7JVCcBLO-yAppY0ie_1SLtQZXGDGZU22SZeMv' });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
+    //const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: 'v02%3Auser_token_or_cookies%3AGXYK1MbgiAkyh6B8BaFtoySOWF_RD3NzlmrNqx_eV2-fZLrmRsuGLRAR1tKkHpyGlbPLhEB4Xu5IuGQZI0-dR7fHNJW9mqD7JVCcBLO-yAppY0ie_1SLtQZXGDGZU22SZeMv' });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
+    const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: process.env.NOTION_API_KEY });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
     const config = new Config(path__default['default'].join(workDir, 'config.json'));
     /** Init dir paths. */
     const theme = config.get('theme');
