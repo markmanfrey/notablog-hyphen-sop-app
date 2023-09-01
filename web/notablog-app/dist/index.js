@@ -1033,7 +1033,8 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     let block;
     let imageIdFull;
     let pageId;
-    const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
+    //const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
+    const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(.png)|((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(.gif)))/g;
     const regexPageID = /([0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12})/g;
     const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g;
     const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
@@ -1050,6 +1051,9 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
                 //console.log("matchregexDragonman",matchregexDragonman);
 
             while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
+
+                //console.log("returnValuePost",returnValuePost);
+
                 matchRegexBlockID = matchregexHtmlHref[0].match(regexBlockID);
                 matchRegexPageID = matchregexHtmlHref[0].match(regexPageID);
                 matchRegexHtmlUrl = matchregexHtmlHref[0].match(regexHtmlUrl);
@@ -1065,9 +1069,10 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
                 imageIdFull = block.image.file.url;
 
-                const cloudinaryURL = await uploadImage(imageIdFull, matchRegexPageID[0]);
+                const cloudinaryURL = await uploadImage(imageIdFull,matchRegexPageID[0]);
+                //console.log("matchRegexHtmlUrl[0]",matchRegexHtmlUrl[0]);
 
-                newHtml = newHtml.replace(matchRegexHtmlUrl[0], cloudinaryURL);
+                newHtml = newHtml.replace(matchRegexHtmlUrl[0],cloudinaryURL);
                 newHtml = newHtml.replace(matchregexDragonman,'');
             }
 
