@@ -24,7 +24,7 @@ const ReactDOMServer = require ('react-dom/server');
 const cloudinary = require('cloudinary').v2;
 const request = require('request');
 const probe = require("probe-image-size");
-
+//const { pageIdToPublish } = require('../../server'); 
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -821,11 +821,14 @@ function createLinkTransformer(siteContext) {
 let returnValue;
 let returnValuePost;
 async function renderPost(task) {
-    const { doFetchPage, pageMetadata, siteContext } = task.data;
+    const { doFetchPage, pageMetadata, siteContext, pageIdToPublish } = task.data;
     const { cache, notionAgent, renderer } = task.tools;
+
     const config = task.config;
-    const pageID = toDashID(pageMetadata.id);
-    //const pageID = "af591314fddf446d99fa48748824e11c";
+    //const pageID = toDashID(pageMetadata.id);
+    const pageID = toDashID(pageIdToPublish);
+    //const pageID = 'af591314fddf446d99fa48748824e11c';
+    //log.info(">>>>>>>>>>>>>>>>>>>>>>> pageIdToPublish",pageID);
     let tree;
     /** Fetch page. */
     if (doFetchPage) {
@@ -861,7 +864,7 @@ async function renderPost(task) {
             },
         });
         returnValuePost = pageHTML;
-        //console.log("returnValue in renderPost ",returnValue);
+        console.log("pageHTML in renderPost ",pageHTML);
 
         //await fs.promises.writeFile(outPath, pageHTML, { encoding: 'utf-8' });
         //return 0;
@@ -943,7 +946,6 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
         const cliArgs = process.argv;
         const cliPageID = (cliArgs[4]);
         if (page.id === pageIdToPublish){
-            //log.info("cliPageID ", cliPageID, "page.id ", page.id, "pageIdToPublish ",pageIdToPublish)
             //log.info("TRUE");
             if (ignoreCache ||
                 cache.shouldUpdate('notion', toDashID(page.id), page.lastEditedTime)) {
@@ -974,6 +976,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
                     siteContext,
                     pageMetadata,
                     doFetchPage: true,
+                    pageIdToPublish,
                 },
                 tools: {
                     renderer,
@@ -993,6 +996,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
                     siteContext,
                     pageMetadata,
                     doFetchPage: false,
+                    pageIdToPublish,
                 },
                 tools: {
                     renderer,
@@ -1021,6 +1025,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     let matchregexHtmlHref;
     let matchRegexPageID;
     let matchRegexHtmlUrl;
+    let matchregexDragonman;
     let blockId;
     let block;
     let imageIdFull;
@@ -1029,18 +1034,21 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const regexPageID = /([0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12})/g;
     const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g;
     const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
-
+    const regexDragonman = /(<div>Powered by*)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(dragonman225)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(<\/div>)/g;
     const notion = new Client({auth: 'secret_xZ2qk4CMTbW15Nso39oavAaKQcZQhiGFaoPVnDixySR'});
 
+    console.log("returnValuePost",returnValuePost);
     async function processHtml() {
         try {
             let newHtml = returnValuePost;
+
+                matchregexDragonman = returnValuePost.match(regexDragonman);
+                console.log("matchregexDragonman",matchregexDragonman);
 
             while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
                 matchRegexBlockID = matchregexHtmlHref[0].match(regexBlockID);
                 matchRegexPageID = matchregexHtmlHref[0].match(regexPageID);
                 matchRegexHtmlUrl = matchregexHtmlHref[0].match(regexHtmlUrl);
-
                 const decodeModule = await import('decode-uri-component');
                 const imageHref = decodeModule.default(matchregexHtmlHref[0]);
                 const imageUID = matchRegexBlockID;
@@ -1056,6 +1064,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
                 const cloudinaryURL = await uploadImage(imageIdFull, matchRegexPageID[0]);
 
                 newHtml = newHtml.replace(matchRegexHtmlUrl[0], cloudinaryURL);
+                newHtml = newHtml.replace(matchregexDragonman,'');
             }
 
             //console.log("new html ----------------------------- ", newHtml);
@@ -1070,10 +1079,10 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     async function uploadImage(imageIdFull, pageId) {
         try {
             cloudinary.config({
-                cloud_name: 'davkwryyf',
-                api_key: '455536684691436', 
-                api_secret: 'ZtvdFwgkb-_BeVeTCVjKfpQgNLo',
-                upload_preset: 'um0pcnbf'
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY, 
+                api_secret: process.env.CLOUDINARY_API_SECRET,
+                upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET
             });
 
             const response = await cloudinary.uploader.upload(imageIdFull, { folder: `test/${pageId}` });
