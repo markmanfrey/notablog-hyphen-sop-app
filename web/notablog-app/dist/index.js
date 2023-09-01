@@ -1037,13 +1037,13 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const regexDragonman = /(<div>Powered by*)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(dragonman225)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(<\/div>)/g;
     const notion = new Client({auth: 'secret_xZ2qk4CMTbW15Nso39oavAaKQcZQhiGFaoPVnDixySR'});
 
-    console.log("returnValuePost",returnValuePost);
+    //console.log("returnValuePost",returnValuePost);
     async function processHtml() {
         try {
             let newHtml = returnValuePost;
 
                 matchregexDragonman = returnValuePost.match(regexDragonman);
-                console.log("matchregexDragonman",matchregexDragonman);
+                //console.log("matchregexDragonman",matchregexDragonman);
 
             while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
                 matchRegexBlockID = matchregexHtmlHref[0].match(regexBlockID);
