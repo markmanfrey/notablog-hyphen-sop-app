@@ -1117,7 +1117,17 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const html = await processHtml();
 
     async function createAndSavePDF() {
-        const browser = await puppeteer.launch();
+          // Specify the custom userDataDir directory path
+        const userDataDir = '/puppeteer-cache'; // Replace with your desired directory
+
+        // Your Puppeteer code here...
+        
+        const browser = await puppeteer.launch({
+            headless: true, // Set to true if you don't need a visible browser window
+            userDataDir,    // Use the custom cache directory
+            args: ['--no-sandbox'], // Required on Heroku
+        });
+
         const page = await browser.newPage();
       
         const htmlContent = html; // Get the HTML content
