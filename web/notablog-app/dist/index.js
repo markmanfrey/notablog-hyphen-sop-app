@@ -1204,8 +1204,8 @@ fetchDatabaseSections()
     // Process sections and items
     for (const sectionName in sections) {
       sections[sectionName].forEach(item => {
-        console.log(`  Item: ${item.itemName}`);
-        console.log(`  Sub-Section: ${item.subSectionValue}`);
+        //console.log(`  Item: ${item.itemName}`);
+        //console.log(`  Sub-Section: ${item.subSectionValue}`);
       });
     }
   })
