@@ -1125,7 +1125,10 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
         const browser = await puppeteer.launch({
             headless: true, // Set to true if you don't need a visible browser window
             userDataDir,    // Use the custom cache directory
-            args: ['--no-sandbox'], // Required on Heroku
+            args: ['--no-sandbox',
+            '--disable-setuid-sandbox'
+            ],
+             // Required on Heroku
         });
 
         const page = await browser.newPage();
