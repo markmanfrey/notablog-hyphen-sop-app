@@ -1116,33 +1116,33 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     //console.log(html);
     const html = await processHtml();
 
-    async function createAndSavePDF() {
-          // Specify the custom userDataDir directory path
-        const userDataDir = '/puppeteer-cache'; // Replace with your desired directory
+    // async function createAndSavePDF() {
+    //       // Specify the custom userDataDir directory path
+    //     const userDataDir = '/puppeteer-cache'; // Replace with your desired directory
 
-        // Your Puppeteer code here...
+    //     // Your Puppeteer code here...
         
-        const browser = await puppeteer.launch({
-            headless: true, // Set to true if you don't need a visible browser window
-            userDataDir,    // Use the custom cache directory
-            args: ['--no-sandbox',
-            '--disable-setuid-sandbox'
-            ],
-             // Required on Heroku
-        });
+    //     const browser = await puppeteer.launch({
+    //         headless: true, // Set to true if you don't need a visible browser window
+    //         userDataDir,    // Use the custom cache directory
+    //         args: ['--no-sandbox',
+    //         '--disable-setuid-sandbox'
+    //         ],
+    //          // Required on Heroku
+    //     });
 
-        const page = await browser.newPage();
+    //     const page = await browser.newPage();
       
-        const htmlContent = html; // Get the HTML content
+    //     const htmlContent = html; // Get the HTML content
         
-        await page.setContent(htmlContent);
-        await page.pdf({ path: 'output.pdf', format: 'A4' });
+    //     await page.setContent(htmlContent);
+    //     await page.pdf({ path: 'output.pdf', format: 'A4' });
       
-        await browser.close();
+    //     await browser.close();
     
-      }
+    //   }
       
-    createAndSavePDF();
+    // createAndSavePDF();
 
     return html;
 
