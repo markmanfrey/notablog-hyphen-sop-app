@@ -1147,7 +1147,7 @@ async function fetchDatabaseSections() {
               accept: 'application/json',
               'Notion-Version': '2022-06-28',
               'content-type': 'application/json',
-              Authorization: `Bearer secret_0be4Jc6QXO7CEZ3eahSCNY9DbbOl73nzuKZHLINgxJO`,
+              Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
             },
             data: {page_size: 100}
         };
