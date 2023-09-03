@@ -18,7 +18,7 @@ var ejs = require('ejs');
 require('squirrelly');
 var visit = require('unist-util-visit');
 var child_process = require('child_process');
-const React = require('react'); 
+const React = require('react');
 const { useContext } = React;
 //let redis = require('../../../web/redis-client');
 const ReactDOMServer = require ('react-dom/server');
@@ -26,6 +26,12 @@ const ReactDOMServer = require ('react-dom/server');
 const cloudinary = require('cloudinary').v2;
 const request = require('request');
 const probe = require("probe-image-size");
+const { PDFDocument, rgb } = require('pdf-lib');
+const { htmlToImage } = require('html-to-image');
+const puppeteer = require('puppeteer');
+const axios = require('axios');
+
+
 //const { pageIdToPublish } = require('../../server'); 
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -849,6 +855,7 @@ async function renderPost(task) {
         else
             throw new Error(`Cache of page "${pageID}" is corrupted, run "noteablog-app generate --fresh <path_to_starter>" to fix`);
     }
+    
     /** Render with template. */
     if (pageMetadata.publish) {
         //log.info(`Render published page "${pageID}"`);
@@ -877,6 +884,7 @@ async function renderPost(task) {
     //}
     //log.info(pageHTML);
     //console.log("returnValue ",returnValue);
+
     return returnValuePost;
 }
 //log.info("outPageIdToPublishString ",config.outPageIdToPublishString);
@@ -1014,7 +1022,6 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     });
     await Promise.all(tasks);
 
-    
     //const regex = /((https%)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
     //const regex = /((https%)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+)/g;
     //const regex = /(?!.*id=)([a-z0-9/-]){36}/g; //isolate pageID from html string
@@ -1108,9 +1115,104 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
     //console.log(html);
     const html = await processHtml();
+
+    async function createAndSavePDF() {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+      
+        const htmlContent = html; // Get the HTML content
+        
+        await page.setContent(htmlContent);
+        await page.pdf({ path: 'output.pdf', format: 'A4' });
+      
+        await browser.close();
+    
+      }
+      
+    createAndSavePDF();
+
     return html;
 
 }
+
+async function fetchDatabaseSections() {
+    try {
+
+        const sections = {};
+
+        const options = {
+            method: 'POST',
+            url: 'https://api.notion.com/v1/databases/48b26e793f30423591d5add587f39aa8/query',
+            headers: {
+              accept: 'application/json',
+              'Notion-Version': '2022-06-28',
+              'content-type': 'application/json',
+              Authorization: `Bearer secret_0be4Jc6QXO7CEZ3eahSCNY9DbbOl73nzuKZHLINgxJO`,
+            },
+            data: {page_size: 100}
+        };
+
+        const response = await axios(options); // Make the Axios request and await the response
+
+        if (response && response.data) {
+            const items = response.data.results;
+      
+            items.forEach(item => {
+              // Check if the 'Section' property and its 'select' property exist
+              if (item.properties && item.properties.section && item.properties.section.select) {
+                // Access the 'name' property of the selected 'Section' option
+                const sectionName = item.properties.section.select.name;
+                
+                let subSectionValue = ''; // Declare subSectionValue here with an initial empty value
+
+                // Check if the 'Sub-Section' property exists and has a 'select' property
+                if (item.properties['sub-section'] && item.properties['sub-section'].select) {
+                    // Access the 'name' property of the selected 'Sub-Section' option
+                    subSectionValue = item.properties['sub-section'].select.name;
+                } else {
+                    // Handle cases where 'Sub-Section' is not defined
+                    subSectionValue = 'No sub-section';
+                }
+
+                const itemName = item.properties.name.title[0]?.plain_text || ''; // Use optional chaining to handle undefined
+
+                if (!sections[sectionName]) {
+                  sections[sectionName] = [];
+                }
+                sections[sectionName].push({ itemName, subSectionValue });
+              }
+
+            });
+
+            //console.log('sections:', sections);
+            
+            return sections;
+          } else {
+            console.error('Response or response data is undefined.');
+            return null; // You can return an appropriate value or throw an error here
+          }
+        } catch (error) {
+          console.error('Error fetching database:', error);
+          throw error;
+        }
+}
+      
+
+// Call the function to fetch database items
+fetchDatabaseSections()
+  .then(sections => {
+    // Process sections and items
+    for (const sectionName in sections) {
+      sections[sectionName].forEach(item => {
+        console.log(`  Item: ${item.itemName}`);
+        console.log(`  Sub-Section: ${item.subSectionValue}`);
+      });
+    }
+  })
+  .catch(error => {
+    // Handle errors
+  });
+  
 /**
  * Open `index` with `bin`.
  * @see https://nodejs.org/api/child_process.html#child_process_options_detached
@@ -1141,4 +1243,5 @@ function preview(workDir) {
 module.exports = {
     generate,
     preview,
+    fetchDatabaseSections,
 }

@@ -8,7 +8,7 @@ const { exec } = require('child_process');
 const { execFile } = require('child_process');
 const router = require('./routes/notionHtml'); // import the routes
 const { generateHTML } = require('./controllers/notionHtml');
-const { generate } = require('./notablog-app/dist/index');
+const { generate, fetchDatabaseSections } = require('./notablog-app/dist/index');
 
 app.use(express.json());
 app.use('/', router); //to use the routes
@@ -29,41 +29,23 @@ app.post('/notionHtml/:pageId', async (req, res) => {
 
     try{
       const html = await generate(workDir, pageIdToPublish); // Replace 'page123' with the desired pageId
-      //console.log(html);
-      // Set the content type to 'text/html'
-      res.setHeader('Content-Type', 'text/html');
-  
-      // Write the HTML content to the response
-      res.write(html);
-  
-      // End the response
-      res.end();
-    } catch (error) {
-      // Handle errors appropriately
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-  }
-});
-  // send response  });
-//app.get("/server/testResp", testResp)
+      const sections = await fetchDatabaseSections();
 
-// async function testResp (req, res) {
-//     //console.log('Request for data received by Express backend');
-//     //const command = 'notablog-app generate ../notablog-starter/ af591314fddf446d99fa48748824e11c --fresh'; // replace with your command
-//     execFile(__dirname + '/client/src/notablog-app-script.sh', (error, stdout, stderr) => {
-//       if (error) {
-//         console.error(`exec error: ${error}`);
-//         return;
-//       }
-//       if (stderr) {
-//         console.error(`stderr: ${stderr}`);
-//         return;
-//       }
-//       //res.send(`Command output: ${stdout}`);
-//       console.log(stdout);
-//       //res.status(200).json(`String sent by Express backend ${stdout}`);
-//     });
-// }
+      const responseData = {
+        "Existing Data": html,
+        "Sections": sections,
+      };
+  
+      // Send the entire JSON response
+      res.json(responseData);
+    } catch (error) {
+      // Handle errors and send an error response
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
 if(process.env.NODE_ENV != "production"){
     app.get('/server/', async function(req, res){
          console.log('Main page loading...');
