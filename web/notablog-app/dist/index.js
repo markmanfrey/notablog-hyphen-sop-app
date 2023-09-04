@@ -1308,12 +1308,12 @@ async function webflowCollection(pageIdToPublish) {
     let parsedData;
     try {
         parsedData = JSON.parse(customAttributesJSON); // Parse JSON
-        console.log(parsedData);
+        //console.log(parsedData);
     } catch (error) {
         console.error('Error parsing JSON:', error);
     }
     // Function to create a new collection item
-    console.log("customAttributesJSON",customAttributesJSON);
+    //console.log("customAttributesJSON",customAttributesJSON);
     try{
         
         const API_KEY = process.env.WEBFLOW_API;
