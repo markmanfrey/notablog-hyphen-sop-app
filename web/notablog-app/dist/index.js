@@ -1176,7 +1176,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         const sections = {};
         const notionDatabaseId = process.env.NOTION_DATABASE_ID;
         //const notionApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
-        const notionApiUrl = `https://api.notion.com/v1/pages/${pageIdToPublishLOCAL}`;
+        const notionApiUrl = `https://api.notion.com/v1/pages/${pageIdToPublish}`;
 
         const options = {
             method: 'GET',
