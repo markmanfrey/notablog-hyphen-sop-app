@@ -1362,7 +1362,8 @@ async function webflowCollection(pageIdToPublish) {
                     fetch(API_ENDPOINT, options)
                     .then(response => response.json())
                     .then(response => {
-                        console.log('API Response:', response);
+                        //console.log('API Response:', response);
+                        console.log('API Response: Successfully fetched');
                     })
                     .catch(err => console.error(err));
                     
