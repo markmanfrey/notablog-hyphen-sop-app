@@ -1200,7 +1200,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         const jsonResult = {};
         
         //console.log("page ", page);
-        const sectionsAndSubSections = {};
+        let sectionsAndSubSections = {};
 
         nameValue = page.properties.nameFormula.formula.string;
         idValue = page.id;
@@ -1220,85 +1220,48 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         // Add other attributes to customAttributes
         //customAttributes[item.id].name = nameValue;
         //customAttributes[item.id].itemID = idValue;
-        customAttributesJSON = JSON.stringify(customAttributes);
         //console.log(customAttributes);
 
         //const fieldData = customAttributes[item.id];
         //customAttributesArray.push(customAttributes[item.id].name);
         //console.log("customAttributesJSON",customAttributesJSON);
         //console.log("customAttributesArray ", customAttributesArray);
+        if (sectionValue) {
+            // Initialize an array for the current section if it doesn't exist
+            if (!sectionsAndSubSections[sectionValue]) {
+                sectionsAndSubSections[sectionValue] = [];
+            }
+
+            // Add the sub-section to the current section's array if it's not "None"
+            if (subSectionValue && subSectionValue !== 'None') {
+                sectionsAndSubSections[sectionValue].push(subSectionValue);
+            }
+        }
+        
+        for (const sectionKey in sectionsAndSubSections) {
+            if (sectionsAndSubSections.hasOwnProperty(sectionKey)) {
+                const subsections = sectionsAndSubSections[sectionKey];
+                let subSectionCounter = 1;
+        
+                subsections.forEach((subSection) => {
+                    customAttributes[`subsectionitem${subSectionCounter}`] = subSection;
+                    subSectionCounter++;
+                });
+            }
+        }
+        //console.log("sectionsAndSubSections",sectionsAndSubSections);
+        //console.log("customAttributes",customAttributes);
+        customAttributesJSON = JSON.stringify(customAttributes);
+
     }
-        // // Iterate through the database items
-        // for (const key in page.properties) {
 
-        //     if (page.properties.hasOwnProperty(key)) {
-
-
-        //         // Skip items with no section or sub-section
-        //         if (!sectionValue) {
-        //             return;
-        //         }
-
-        //         // Initialize an array for the current section if it doesn't exist
-        //         if (!sectionsAndSubSections[sectionValue]) {
-        //             sectionsAndSubSections[sectionValue] = new Set();
-        //         }
-
-        //         // Add the sub-section to the current section's array if it's not "None"
-        //         if (subSectionValue && subSectionValue !== 'None') {
-        //             sectionsAndSubSections[sectionValue].add(subSectionValue);
-        //         }
-        //     };
-        // };
-
-        // for (const key in page.properties) {
-        //     let cleanedSectionName;
-
-        //     if (page.properties.hasOwnProperty(key)) {
-        //         const properties = page.properties[key];
-        //         // Access the properties and process them here
-        //         // Example:
-        //         const sectionValue = properties.section?.select?.name;
-        //         subSectionValue = properties['sub-section']?.select?.name; // Use optional chaining to handle undefined values
-        //         nameValue = properties.nameFormula.formula.string;
-        //         idValue = properties.id.toString();
-        //         const nameNoSpaces = nameValue.replace(/\s+/g, '_').toLowerCase();
-        //         const nameNoSpecialCharacters = nameNoSpaces.replace(/[^\w\s]/g, '');
-
-        //         customAttributes[properties.id] = {};
-        //         customAttributes[properties.id].name = nameValue;
-
-        //         //console.log(String(customAttributes[item.id].name));
-
-        //         customAttributes[properties.id].slug = nameNoSpecialCharacters;
-        //         customAttributes[properties.id].itemuid = idValue;
-        //         customAttributes[properties.id].sectionname = sectionValue;
-        //         customAttributes[properties.id].subsectionname = subSectionValue;
-
-        //         // Remove single and double quotes from the section name (if present)
-        //         cleanedSectionName = sectionValue.replace(/['"]/g, '');
-        //     }
-        //     // Add the section and all sub-sections to customAttributes if they match
-        //     if (sectionsAndSubSections[cleanedSectionName]) {
-        //         customAttributes[properties.id].sectionname = cleanedSectionName;
-        //         //customAttributes[item.id].subSections = sectionsAndSubSections[cleanedSectionName];
-        //         let subSectionCounter = 1;
-
-        //         // Add each sub-section as a new attribute with the naming convention subsection${1}
-        //         sectionsAndSubSections[cleanedSectionName].forEach((subSection) => {
-        //             customAttributes[properties.id][`subsection${subSectionCounter}`] = subSection;
-        //             subSectionCounter++;
-        //         });
-        //     }
-
-        //     if (!customAttributes[properties.id].subsectionname && customAttributes[properties.id].subsectionname === 'None') {
-        //         customAttributes[properties.id].subsectionname = "FOO";
-        //     }
+    
 
     catch (error) {
         console.error('Error:', error);
     }
-    
+    //console.log("customAttributesJSON",customAttributesJSON);
+
     return customAttributesJSON;   
 }
 
@@ -1344,8 +1307,12 @@ async function webflowCollection(pageIdToPublish) {
                         htmlbodycode: attributeData["htmlbodycode"],
                     }
                 };
+                for (const key in attributeData) {
+                    if (attributeData.hasOwnProperty(key) && key.startsWith('subsectionitem')) {
+                        DATA.fieldData[key] = attributeData[key];
+                    }
+                }
                 //console.log("DATA",DATA);
-
                 //for (let i = 0; i < 5; i++) {
                     try {
                     // Make the API request
