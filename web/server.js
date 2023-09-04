@@ -8,7 +8,7 @@ const { exec } = require('child_process');
 const { execFile } = require('child_process');
 const router = require('./routes/notionHtml'); // import the routes
 const { generateHTML } = require('./controllers/notionHtml');
-const { generate, fetchDatabaseSections } = require('./notablog-app/dist/index');
+const { generate, webflowCollection } = require('./notablog-app/dist/index');
 
 app.use(express.json());
 app.use('/', router); //to use the routes
@@ -16,24 +16,24 @@ app.use('/', router); //to use the routes
 app.use(bodyParser.json());
 //URL calls paths must be before paths below to default html page. Otherwise, it will not work
 
+const workDir = "./notablog-starter/"; // The first argument should be the workDir
+
 app.post('/notionHtml/:pageId', async (req, res) => {
     const args = process.argv.slice(2); // Remove the first two elements (node executable and script name)
-    const workDir = "./notablog-starter/"; // The first argument should be the workDir
     const pageIdWithDash = req.params.pageId; // The second argument should be the pageIdToPublish
-  
+    const workDir = "./notablog-starter/"; // The first argument should be the workDir
     const regexNoDash = /([a-zA-Z0-9])/g;
     const matchregexNoDash = pageIdWithDash.replace(/-/g, '');
     const pageIdToPublish = matchregexNoDash
     //console.log("pageIdWithDash ",pageIdWithDash);
     //console.log("pageIdToPublish",pageIdToPublish);
-
     try{
-      const html = await generate(workDir, pageIdToPublish); // Replace 'page123' with the desired pageId
-      const sections = await fetchDatabaseSections();
+      //const html = await generate(workDir, pageIdToPublish); // Replace 'page123' with the desired pageId
+      const collectionItem = await webflowCollection(pageIdToPublish);
 
       const responseData = {
         "Existing Data": html,
-        "Sections": sections,
+        "webflowCollection": collectionItem,
       };
   
       // Send the entire JSON response
@@ -43,8 +43,10 @@ app.post('/notionHtml/:pageId', async (req, res) => {
       console.error('Error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
+
 });
 
+module.exports = workDir;
 
 if(process.env.NODE_ENV != "production"){
     app.get('/server/', async function(req, res){

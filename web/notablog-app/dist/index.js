@@ -29,8 +29,8 @@ const probe = require("probe-image-size");
 const { PDFDocument, rgb } = require('pdf-lib');
 const { htmlToImage } = require('html-to-image');
 const puppeteer = require('puppeteer');
-const axios = require('axios');
-
+const axios = require('axios'); 
+const fetch = require('node-fetch');
 
 //const { pageIdToPublish } = require('../../server'); 
 
@@ -1043,19 +1043,25 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     //const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
     const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(.png)|((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(.gif)))/g;
     const regexPageID = /([0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12})/g;
-    const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g;
+    const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12}$/g;
     const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
     const regexDragonman = /(<div>Powered by*)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(dragonman225)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(<\/div>)/g;
     
-    const notion = new Client({auth: 'secret_xZ2qk4CMTbW15Nso39oavAaKQcZQhiGFaoPVnDixySR'});
+    const notion = new Client({auth: process.env.NOTION_SECRET});
 
     //console.log("returnValuePost",returnValuePost);
     async function processHtml() {
+
+        function isValidUUID(uuid) {
+            const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+            return uuidPattern.test(uuid);
+        }
+
         try {
             let newHtml = returnValuePost;
 
                 matchregexDragonman = returnValuePost.match(regexDragonman);
-                //console.log("matchregexDragonman",matchregexDragonman);
+                //console.log("newHtml",newHtml);
 
             while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
 
@@ -1067,6 +1073,12 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
                 const decodeModule = await import('decode-uri-component');
                 const imageHref = decodeModule.default(matchregexHtmlHref[0]);
                 const imageUID = matchRegexBlockID;
+
+                if (!isValidUUID(imageUID)) {
+                    // Handle the case where imageUID is not a valid UUID
+                    console.error(`Invalid imageUID: ${imageUID}`);
+                    continue; // Skip this iteration and proceed to the next one
+                }
 
                 blockId = imageUID;
 
@@ -1148,94 +1160,247 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
 }
 
-async function fetchDatabaseSections() {
+const pageIdToPublishLOCAL = "3a21b11b18614008ac987f39c6d5682c";
+async function fetchDatabaseItemMetaData(pageIdToPublish) {
+    let customAttributes = {};
+    let customAttributesArray = [];
+    let customAttributesJSON = {};
+    let subSectionValue;
+    const workDir = require('../../server.js')
+    //console.log("workDir imported",workDir);
+    const html = await generate(workDir, pageIdToPublish);
+    //console.log('html:', html);
+
     try {
 
         const sections = {};
+        const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+        //const notionApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
+        const notionApiUrl = `https://api.notion.com/v1/pages/${pageIdToPublishLOCAL}`;
 
         const options = {
-            method: 'POST',
-            url: 'https://api.notion.com/v1/databases/48b26e793f30423591d5add587f39aa8/query',
+            method: 'GET',
+            url: notionApiUrl,
             headers: {
               accept: 'application/json',
               'Notion-Version': '2022-06-28',
               'content-type': 'application/json',
               Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
             },
-            data: {page_size: 100}
         };
 
         const response = await axios(options); // Make the Axios request and await the response
+        const page = response.data;
 
-        if (response && response.data) {
-            const items = response.data.results;
-      
-            items.forEach(item => {
-              // Check if the 'Section' property and its 'select' property exist
-              if (item.properties && item.properties.section && item.properties.section.select) {
-                // Access the 'name' property of the selected 'Section' option
-                const sectionName = item.properties.section.select.name;
-                
-                let subSectionValue = ''; // Declare subSectionValue here with an initial empty value
+        const sectionMap = new Map();
+        let nameValue;
+        let sectionValue;
+        let idValue;
+        const subSectionsBySection = {};
+        const jsonResult = {};
+        
+        //console.log("page ", page);
+        const sectionsAndSubSections = {};
 
-                // Check if the 'Sub-Section' property exists and has a 'select' property
-                if (item.properties['sub-section'] && item.properties['sub-section'].select) {
-                    // Access the 'name' property of the selected 'Sub-Section' option
-                    subSectionValue = item.properties['sub-section'].select.name;
-                } else {
-                    // Handle cases where 'Sub-Section' is not defined
-                    subSectionValue = 'No sub-section';
-                }
+        nameValue = page.properties.nameFormula.formula.string;
+        idValue = page.id;
+        sectionValue = page.properties.section?.select?.name;
+        const subSectionValue = page.properties['sub-section']?.select?.name; // Use optional chaining to handle undefined values
 
-                const itemName = item.properties.name.title[0]?.plain_text || ''; // Use optional chaining to handle undefined
+        const nameNoSpaces = nameValue.replace(/\s+/g, '_').toLowerCase();
+        const nameNoSpecialCharacters = nameNoSpaces.replace(/[^\w\s]/g, '');
 
-                if (!sections[sectionName]) {
-                  sections[sectionName] = [];
-                }
-                sections[sectionName].push({ itemName, subSectionValue });
-              }
+        customAttributes.name = nameValue;
+        customAttributes.slug = nameNoSpecialCharacters;
+        customAttributes.itemuid = idValue;
+        customAttributes.sectionname = sectionValue;
+        customAttributes.subsectionnameprime = subSectionValue;
+        customAttributes.htmlbodycode = html;
 
-            });
+        // Add other attributes to customAttributes
+        //customAttributes[item.id].name = nameValue;
+        //customAttributes[item.id].itemID = idValue;
+        customAttributesJSON = JSON.stringify(customAttributes);
+        //console.log(customAttributes);
 
-            //console.log('sections:', sections);
-            
-            return sections;
-          } else {
-            console.error('Response or response data is undefined.');
-            return null; // You can return an appropriate value or throw an error here
-          }
-        } catch (error) {
-          console.error('Error fetching database:', error);
-          throw error;
-        }
+        //const fieldData = customAttributes[item.id];
+        //customAttributesArray.push(customAttributes[item.id].name);
+        //console.log("customAttributesJSON",customAttributesJSON);
+        //console.log("customAttributesArray ", customAttributesArray);
+    }
+        // // Iterate through the database items
+        // for (const key in page.properties) {
+
+        //     if (page.properties.hasOwnProperty(key)) {
+
+
+        //         // Skip items with no section or sub-section
+        //         if (!sectionValue) {
+        //             return;
+        //         }
+
+        //         // Initialize an array for the current section if it doesn't exist
+        //         if (!sectionsAndSubSections[sectionValue]) {
+        //             sectionsAndSubSections[sectionValue] = new Set();
+        //         }
+
+        //         // Add the sub-section to the current section's array if it's not "None"
+        //         if (subSectionValue && subSectionValue !== 'None') {
+        //             sectionsAndSubSections[sectionValue].add(subSectionValue);
+        //         }
+        //     };
+        // };
+
+        // for (const key in page.properties) {
+        //     let cleanedSectionName;
+
+        //     if (page.properties.hasOwnProperty(key)) {
+        //         const properties = page.properties[key];
+        //         // Access the properties and process them here
+        //         // Example:
+        //         const sectionValue = properties.section?.select?.name;
+        //         subSectionValue = properties['sub-section']?.select?.name; // Use optional chaining to handle undefined values
+        //         nameValue = properties.nameFormula.formula.string;
+        //         idValue = properties.id.toString();
+        //         const nameNoSpaces = nameValue.replace(/\s+/g, '_').toLowerCase();
+        //         const nameNoSpecialCharacters = nameNoSpaces.replace(/[^\w\s]/g, '');
+
+        //         customAttributes[properties.id] = {};
+        //         customAttributes[properties.id].name = nameValue;
+
+        //         //console.log(String(customAttributes[item.id].name));
+
+        //         customAttributes[properties.id].slug = nameNoSpecialCharacters;
+        //         customAttributes[properties.id].itemuid = idValue;
+        //         customAttributes[properties.id].sectionname = sectionValue;
+        //         customAttributes[properties.id].subsectionname = subSectionValue;
+
+        //         // Remove single and double quotes from the section name (if present)
+        //         cleanedSectionName = sectionValue.replace(/['"]/g, '');
+        //     }
+        //     // Add the section and all sub-sections to customAttributes if they match
+        //     if (sectionsAndSubSections[cleanedSectionName]) {
+        //         customAttributes[properties.id].sectionname = cleanedSectionName;
+        //         //customAttributes[item.id].subSections = sectionsAndSubSections[cleanedSectionName];
+        //         let subSectionCounter = 1;
+
+        //         // Add each sub-section as a new attribute with the naming convention subsection${1}
+        //         sectionsAndSubSections[cleanedSectionName].forEach((subSection) => {
+        //             customAttributes[properties.id][`subsection${subSectionCounter}`] = subSection;
+        //             subSectionCounter++;
+        //         });
+        //     }
+
+        //     if (!customAttributes[properties.id].subsectionname && customAttributes[properties.id].subsectionname === 'None') {
+        //         customAttributes[properties.id].subsectionname = "FOO";
+        //     }
+
+    catch (error) {
+        console.error('Error:', error);
+    }
+    
+    return customAttributesJSON;   
 }
-      
+
+
+async function webflowCollection(pageIdToPublish) {
+    const customAttributesJSON = await fetchDatabaseItemMetaData(pageIdToPublish); // Parse JSON
+    let parsedData;
+    try {
+        parsedData = JSON.parse(customAttributesJSON); // Parse JSON
+        console.log(parsedData);
+    } catch (error) {
+        console.error('Error parsing JSON:', error);
+    }
+    // Function to create a new collection item
+    console.log("customAttributesJSON",customAttributesJSON);
+    try{
+        
+        const API_KEY = process.env.WEBFLOW_API;
+        const SITE_ID = process.env.WEBFLOW_SITE_ID;
+        const COLLECTION_ID = process.env.WEBFLOW_COLLECTION_ID;
+        const API_ENDPOINT = `https://api.webflow.com/beta/collections/${COLLECTION_ID}/items`;
+
+        // const headers = {
+        //     Authorization: `Bearer ${API_KEY}`,
+        //     'Content-Type': 'application/json',
+        //     'accept-version': '1.0.0',
+        // };
+
+        // Assuming customAttributes is a promise, await it to get the actual data
+        // for (const itemuid in customAttributesJSON) {
+        //     if (customAttributesJSON.hasOwnProperty(itemuid)) {
+                const attributeData = parsedData;
+                //console.log("attributeData",attributeData);
+                const DATA = {
+                    isArchived: false,
+                    isDraft: false,
+                    fieldData: {
+                        name: attributeData["name"],
+                        slug: attributeData["slug"],
+                        itemuid: attributeData["itemuid"],
+                        sectionname: attributeData["sectionname"],
+                        subsectionnameprime: attributeData["subsectionnameprime"],
+                        htmlbodycode: attributeData["htmlbodycode"],
+                    }
+                };
+                //console.log("DATA",DATA);
+
+                //for (let i = 0; i < 5; i++) {
+                    try {
+                    // Make the API request
+                    const options = {
+                        method: 'POST',
+                        headers: {
+                            accept: 'application/json',
+                            'content-type': 'application/json',
+                            authorization: `Bearer ${API_KEY}`,
+                        },
+                        body: JSON.stringify(DATA)
+                    };
+
+                    fetch(API_ENDPOINT, options)
+                    .then(response => response.json())
+                    .then(response => {
+                        console.log('API Response:', response);
+                    })
+                    .catch(err => console.error(err));
+                    
+                  }
+                  catch (error) {
+                    console.error('API Request Error:', error);
+                  }
+                }
+
+    catch (error) {
+        console.error('API Request Error:', error);
+      }
+}
+//webflowCollection(pageIdToPublishLOCAL);
 
 // Call the function to fetch database items
-fetchDatabaseSections()
-  .then(sections => {
-    // Process sections and items
-    for (const sectionName in sections) {
-      sections[sectionName].forEach(item => {
-        //console.log(`  Item: ${item.itemName}`);
-        //console.log(`  Sub-Section: ${item.subSectionValue}`);
-      });
-    }
-  })
-  .catch(error => {
-    // Handle errors
-  });
+// fetchDatabaseSections()
+//   .then(sections => {
+//     // Process sections and items
+//     for (const sectionName in sections) {
+//       sections[sectionName].forEach(item => {
+//         //console.log(`  Item: ${item.itemName}`);
+//         //console.log(`  Sub-Section: ${item.subSectionValue}`);
+//       });
+//     }
+//   })
+//   .catch(error => {
+//     // Handle errors
+//   });
   
-/**
- * Open `index` with `bin`.
- * @see https://nodejs.org/api/child_process.html#child_process_options_detached
- * @param {string} bin
- * @param {string} index
- */
+
 function open(bin, index) {
     const p = child_process.spawn(bin, [index], { detached: true, stdio: 'ignore' });
     p.unref();
 }
+
+
+
 /**
  * Preview the generate blog.
  */
@@ -1256,5 +1421,5 @@ function preview(workDir) {
 module.exports = {
     generate,
     preview,
-    fetchDatabaseSections,
+    webflowCollection,
 }
