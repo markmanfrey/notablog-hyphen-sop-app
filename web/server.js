@@ -32,7 +32,7 @@ app.post('/notionHtml/:pageId', async (req, res) => {
       const collectionItem = await webflowCollection(pageIdToPublish);
 
       const responseData = {
-        "Existing Data": html,
+        //"Existing Data": html,
         "webflowCollection": collectionItem,
       };
   
