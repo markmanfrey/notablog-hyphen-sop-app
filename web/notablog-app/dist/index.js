@@ -19,7 +19,7 @@ require('squirrelly');
 var visit = require('unist-util-visit');
 var child_process = require('child_process');
 const React = require('react');
-const { useContext } = React;
+const { useContext, useEffect, useState } = React;
 //let redis = require('../../../web/redis-client');
 const ReactDOMServer = require ('react-dom/server');
 //const MyContext = require('../../../web/context');
@@ -31,6 +31,7 @@ const { htmlToImage } = require('html-to-image');
 const puppeteer = require('puppeteer');
 const axios = require('axios'); 
 const fetch = require('node-fetch');
+
 
 //const { pageIdToPublish } = require('../../server'); 
 
@@ -1127,32 +1128,6 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
     //console.log(html);
     const html = await processHtml();
-
-    // async function createAndSavePDF() {
-    //       // Specify the custom userDataDir directory path
-    //     const userDataDir = '/puppeteer-cache'; // Replace with your desired directory
-
-    //     // Your Puppeteer code here...
-        
-    //     const browser = await puppeteer.launch({
-    //         headless: true, // Set to true if you don't need a visible browser window
-    //         userDataDir,    // Use the custom cache directory
-    //         args: ['--no-sandbox',
-    //         '--disable-setuid-sandbox'
-    //         ],
-    //          // Required on Heroku
-    //     });
-
-    //     const page = await browser.newPage();
-      
-    //     const htmlContent = html; // Get the HTML content
-        
-    //     await page.setContent(htmlContent);
-    //     await page.pdf({ path: 'output.pdf', format: 'A4' });
-      
-    //     await browser.close();
-    
-    //   }
       
     // createAndSavePDF();
 
@@ -1217,15 +1192,6 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         customAttributes.subsectionnameprime = subSectionValue;
         customAttributes.htmlbodycode = html;
 
-        // Add other attributes to customAttributes
-        //customAttributes[item.id].name = nameValue;
-        //customAttributes[item.id].itemID = idValue;
-        //console.log(customAttributes);
-
-        //const fieldData = customAttributes[item.id];
-        //customAttributesArray.push(customAttributes[item.id].name);
-        //console.log("customAttributesJSON",customAttributesJSON);
-        //console.log("customAttributesArray ", customAttributesArray);
         if (sectionValue) {
             // Initialize an array for the current section if it doesn't exist
             if (!sectionsAndSubSections[sectionValue]) {
@@ -1267,82 +1233,109 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
 
 
 async function webflowCollection(pageIdToPublish) {
-    const customAttributesJSON = await fetchDatabaseItemMetaData(pageIdToPublish); // Parse JSON
-    let parsedData;
+    const customAttributesJSON = await fetchDatabaseItemMetaData(pageIdToPublish);
+    let parsedData = JSON.parse(customAttributesJSON);
+
     try {
         parsedData = JSON.parse(customAttributesJSON); // Parse JSON
         //console.log(parsedData);
-    } catch (error) {
-        console.error('Error parsing JSON:', error);
-    }
-    // Function to create a new collection item
-    //console.log("customAttributesJSON",customAttributesJSON);
-    try{
-        
+
         const API_KEY = process.env.WEBFLOW_API;
-        const SITE_ID = process.env.WEBFLOW_SITE_ID;
         const COLLECTION_ID = process.env.WEBFLOW_COLLECTION_ID;
         const API_ENDPOINT = `https://api.webflow.com/beta/collections/${COLLECTION_ID}/items`;
+    
+        // Define options for the fetch request to query the collection
+        const queryOptions = {
+            method: 'GET',
+            headers: {
+            accept: 'application/json',
+            authorization: `Bearer ${API_KEY}`,
+            },
+        };
 
-        // const headers = {
-        //     Authorization: `Bearer ${API_KEY}`,
-        //     'Content-Type': 'application/json',
-        //     'accept-version': '1.0.0',
-        // };
 
-        // Assuming customAttributes is a promise, await it to get the actual data
-        // for (const itemuid in customAttributesJSON) {
-        //     if (customAttributesJSON.hasOwnProperty(itemuid)) {
-                const attributeData = parsedData;
-                //console.log("attributeData",attributeData);
-                const DATA = {
-                    isArchived: false,
-                    isDraft: false,
-                    fieldData: {
-                        name: attributeData["name"],
-                        slug: attributeData["slug"],
-                        itemuid: attributeData["itemuid"],
-                        sectionname: attributeData["sectionname"],
-                        subsectionnameprime: attributeData["subsectionnameprime"],
-                        htmlbodycode: attributeData["htmlbodycode"],
-                    }
-                };
-                for (const key in attributeData) {
-                    if (attributeData.hasOwnProperty(key) && key.startsWith('subsectionitem')) {
-                        DATA.fieldData[key] = attributeData[key];
-                    }
-                }
-                //console.log("DATA",DATA);
-                //for (let i = 0; i < 5; i++) {
-                    try {
-                    // Make the API request
-                    const options = {
-                        method: 'POST',
-                        headers: {
-                            accept: 'application/json',
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${API_KEY}`,
-                        },
-                        body: JSON.stringify(DATA)
-                    };
+        // Make the API request to query the collection
+        const queryResponse = await fetch(API_ENDPOINT, queryOptions)
+        if (!queryResponse.ok) {
+            console.error('Error querying the collection:', queryResponse.statusText);
+            return;
+        }
 
-                    fetch(API_ENDPOINT, options)
-                    .then(response => response.json())
-                    .then(response => {
-                        //console.log('API Response:', response);
-                        console.log('API Response: Successfully fetched');
-                    })
-                    .catch(err => console.error(err));
-                    
-                  }
-                  catch (error) {
-                    console.error('API Request Error:', error);
-                  }
-                }
+        let collectionData = await queryResponse.json();
+        //console.log('API Response:', collectionData);
 
-    catch (error) {
-        console.error('API Request Error:', error);
-      }
+        let itemId;
+
+        // Check if 'items' property exists in the API response
+        if (collectionData.hasOwnProperty('items') && Array.isArray(collectionData.items)) {
+            const items = collectionData.items;
+            const itemIdToFind = parsedData.itemuid;
+        
+            for (const item of items) {
+            if (item.fieldData && item.fieldData.itemuid === itemIdToFind) {
+                const itemId = item.id;
+                // You found the item's item_id, you can proceed with update or use itemId as needed
+                console.log('Found itemId:', itemId);
+                break; // Exit the loop since you found the item
+            }
+            }
+        } else {
+            // Handle the case where the 'items' property is missing or not an array
+            console.error('Unexpected API response format');
+        }
+
+        //console.log("attributeData",attributeData);
+        const DATA = {
+            isArchived: false,
+            isDraft: false,
+            fieldData: {
+                name: parsedData["name"],
+                slug: parsedData["slug"],
+                itemuid: parsedData["itemuid"],
+                sectionname: parsedData["sectionname"],
+                subsectionnameprime: parsedData["subsectionnameprime"],
+                htmlbodycode: parsedData["htmlbodycode"],
+            }
+        };
+        for (const key in parsedData) {
+            if (key.startsWith('subsectionitem')) {
+                DATA.fieldData[key] = parsedData[key];
+            }
+        }
+        const finalOptions = {
+            method: itemId ? 'PUT' : 'POST', // Use PUT for update and POST for create
+            headers: {
+              accept: 'application/json',
+              'content-type': 'application/json',
+              authorization: `Bearer ${API_KEY}`,
+            },
+            body: JSON.stringify(DATA),
+        };
+    
+        // Define the final API endpoint based on whether the item exists
+        const finalAPIEndpoint = itemId
+        ? `${API_ENDPOINT}/${itemId}` // If the item exists, use the item_id for update
+        : API_ENDPOINT; // If the item doesn't exist, create a new one
+
+        // Make the API request
+        const finalQueryResponse = await fetch(finalAPIEndpoint, finalOptions)
+        if (!finalQueryResponse.ok) {
+            console.error('Error querying the collection:', finalQueryResponse.statusText);
+            return;
+        }
+        const responseJson = await finalQueryResponse.json();
+
+        if (finalOptions.method === 'POST') {
+          // If the HTTP method was POST, it means a new item was created
+          console.log('New item created:', responseJson);
+        } else if (finalOptions.method === 'PUT') {
+          // If the HTTP method was PUT, it means an existing item was updated
+          console.log('Item updated:', responseJson);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 //webflowCollection(pageIdToPublishLOCAL);
 
