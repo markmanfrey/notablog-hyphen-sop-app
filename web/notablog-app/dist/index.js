@@ -1129,29 +1129,22 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     //console.log(html);
     const html = await processHtml();
 
-        // const pdfMake = require('pdfmake');
-        // const htmlToPdfmake = require('html-to-pdfmake');
-        
-        // function htmlToPdf(html) {
-        //     const pdfmakeContent = htmlToPdfmake(html, {
-        //     tableAutoSize: true, // Adjust table sizes automatically
-        //     });
-        
-        //     return pdfmakeContent;
-        // }
-        // function generatePDF(htmlContent) {
-        // const documentDefinition = {
-        //     content: htmlToPdf(htmlContent),
-        // };
-        
-        // const pdfDoc = pdfMake.createPdf(documentDefinition);
-        
-        // // Save the PDF to a file
-        // pdfDoc.getBuffer((buffer) => {
-        //     fs.writeFileSync('document.pdf', buffer);
-        // });
-        // }
-        // generatePDF (html) 
+    //async function generatePDF() {
+    //   const browser = await puppeteer.launch();
+    //   const page = await browser.newPage();
+    
+    //   // You can generate PDF from a URL
+    //   // await page.goto('https://example.com');
+    
+    //   await page.setContent(html);
+    
+    //   await page.pdf({ path: 'document.pdf', format: 'A4' });
+    
+    //   await browser.close();
+    // }
+    
+    // generatePDF();
+     
 
     return html;
 
@@ -1500,7 +1493,7 @@ async function webflowCollection(pageIdToPublish) {
                 throw new Error(`HTTP error! Status: ${finalQueryResponse.status}`);
             }
             else if(finalQueryResponse.ok) {
-                console.log(`finalQueryResponseJson: ${finalQueryResponse.status}`);
+                console.log(`Article API Response Status: ${finalQueryResponse.status}`);
             }
         
 
@@ -1617,17 +1610,17 @@ async function webflowCollection(pageIdToPublish) {
                 //console.log("updateSubsectionCollectionOptions",updateSubsectionCollectionOptions);
 
                 const subsectionsUpdateResponse = await fetch(API_ENDPOINT_SUBSECTION_UPDATE, updateSubsectionCollectionOptions);
-            
+                subsectionsUpdateResponseJson = await subsectionsUpdateResponse.json();
+
                 if (!subsectionsUpdateResponse.ok) {
                     throw new Error(`HTTP error! Status: ${subsectionsUpdateResponse.status}`);
                 }
                 else if(subsectionsUpdateResponse.ok) {
-                    console.log(`subsectionsUpdateResponse: ${subsectionsUpdateResponse.status}`);
+                    console.log(`Section updated: ${itemSectionNameToFind}`)
+                    console.log(`Subsection API Response Status: ${subsectionsUpdateResponse.status}`);
+                    //console.log("subsectionsUpdateResponseJson",subsectionsUpdateResponseJson);
                 }
-                
-                subsectionsUpdateResponseJson = await subsectionsUpdateResponse.json();
-                //console.log("subsectionsUpdateResponseJson",subsectionsUpdateResponseJson);
-            
+                            
             } catch (error) {
                 console.error('Error:', error);
             }
