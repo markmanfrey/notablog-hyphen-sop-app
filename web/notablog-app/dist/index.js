@@ -1378,7 +1378,10 @@ async function webflowCollection(pageIdToPublish) {
             //console.log('articlesCollectionData.items[0].id:', articlesCollectionData.items[0].id);
 
             for (const item of articlesCollectionData.items) {
-                //console.log('itemuid:', item.fieldData.itemuid);
+                
+                console.log("");
+                console.log("itemuid",item.fieldData.itemuid);
+                console.log("");
                 //console.log('itemIdToFind:', itemIdToFind);
                 itemCollectionId = item.id;
                 //console.log('itemCollectionId:', itemCollectionId);
@@ -1388,8 +1391,9 @@ async function webflowCollection(pageIdToPublish) {
                     // You found the item's item_id, you can proceed with update or use itemId as needed
                     console.log('Found matching article:',itemuid,'');
                     break; // Exit the loop since you found the item
-                }else{
-                    console.log('Notion article (',item.fieldData.name,')has not been created in CMS. Creating it now.');
+                }else if (item.fieldData.itemuid != itemIdToFind) {
+                    console.log('Notion article "',item.fieldData.name,'" has not been created in CMS. Creating it now.');
+                    break; // Exit the loop since you didn't find the item
                 }
             }
         } else {
