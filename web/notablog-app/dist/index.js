@@ -1145,17 +1145,20 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
     //console.log("workDir imported",workDir);
     const html = await generate(workDir, pageIdToPublish);
     //console.log('html:', html);
+    let sectionData = {}; 
+    let sectionName;
 
     try {
 
         const sections = {};
         const notionDatabaseId = process.env.NOTION_DATABASE_ID;
-        //const notionApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
-        const notionApiUrl = `https://api.notion.com/v1/pages/${pageIdToPublish}`;
+        const notionPageApiUrl = `https://api.notion.com/v1/pages/${pageIdToPublish}`;
+        const notionDatabaseApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
 
-        const options = {
+
+        // Query page
+        const pageQueryOptions = {
             method: 'GET',
-            url: notionApiUrl,
             headers: {
               accept: 'application/json',
               'Notion-Version': '2022-06-28',
@@ -1164,8 +1167,15 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
             },
         };
 
-        const response = await axios(options); // Make the Axios request and await the response
-        const page = response.data;
+        const pageQueryResponse = await fetch(notionPageApiUrl, pageQueryOptions);
+        const pageQueryData = await pageQueryResponse.json();
+        //console.log("pageQueryData ", pageQueryData);
+        
+        const publishValue = pageQueryData.properties.publish?.checkbox; // Adjust the property name as needed
+        if (publishValue === false) {
+            console.log('Skipping page because publish is false');
+            return; // Skip processing if publish is false
+        }
 
         const sectionMap = new Map();
         let nameValue;
@@ -1177,10 +1187,10 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         //console.log("page ", page);
         let sectionsAndSubSections = {};
 
-        nameValue = page.properties.nameFormula.formula.string;
-        idValue = page.id;
-        sectionValue = page.properties.section?.select?.name;
-        const subSectionValue = page.properties['sub-section']?.select?.name; // Use optional chaining to handle undefined values
+        nameValue = pageQueryData.properties.nameFormula.formula.string;
+        idValue = pageQueryData.id;
+        sectionValue = pageQueryData.properties.section?.select?.name;
+        const subSectionValue = pageQueryData.properties['sub-section']?.select?.name; // Use optional chaining to handle undefined values
 
         const nameNoSpaces = nameValue.replace(/\s+/g, '_').toLowerCase();
         const nameNoSpecialCharacters = nameNoSpaces.replace(/[^\w\s]/g, '');
@@ -1190,62 +1200,157 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         customAttributes.itemuid = idValue;
         customAttributes.sectionname = sectionValue;
         customAttributes.subsectionnameprime = subSectionValue;
-        customAttributes.htmlbodycode = html;
+        //customAttributes.htmlbodycode = html;
 
-        if (sectionValue) {
-            // Initialize an array for the current section if it doesn't exist
-            if (!sectionsAndSubSections[sectionValue]) {
-                sectionsAndSubSections[sectionValue] = [];
-            }
+        console.log('Publish is set to true in Notion for "', nameValue,'", posting to Site.');
 
-            // Add the sub-section to the current section's array if it's not "None"
-            if (subSectionValue && subSectionValue !== 'None') {
-                sectionsAndSubSections[sectionValue].push(subSectionValue);
+        // Query database
+        const databaseQueryOptions = {
+            method: 'POST',
+            headers: {
+            accept: 'application/json',
+            'Notion-Version': '2022-06-28',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
+            },
+            body: JSON.stringify({page_size: 100}),
+        };
+
+        const databaseQueryResponse = await fetch(notionDatabaseApiUrl, databaseQueryOptions)
+        if (!databaseQueryResponse.ok) {
+            console.error('Error querying the collection:', databaseQueryResponse.statusText);
+            return;
+        }
+        //console.log("databaseQueryResponse ",databaseQueryResponse);
+
+        const databaseQueryData = await databaseQueryResponse.json();
+        //console.log("databaseQueryData ",databaseQueryData);
+
+        if (!databaseQueryData || !Array.isArray(databaseQueryData.results)) {
+            console.error('Database data is missing or incomplete.');
+            return;
+        }
+
+        for (const key in databaseQueryData) {
+            if (databaseQueryData.hasOwnProperty(key)) {
+            const value = databaseQueryData[key];
+            //console.log(`${key}: ${value}`);
             }
         }
-        
+    
+        const filteredPublishItems = databaseQueryData.results.filter((item) => {
+            const publishValue = item.properties.publish?.checkbox;
+            return publishValue !== false;
+        });
+
+        for (const item of filteredPublishItems) {
+            const sectionValue = item.properties.section?.select?.name;
+            const subSectionValue = item.properties['sub-section']?.select?.name;
+
+            if (sectionValue) {
+                // Initialize an array for the current section if it doesn't exist
+                if (!sectionsAndSubSections[sectionValue]) {
+                    sectionsAndSubSections[sectionValue] = new Set(); // Use a Set to store unique sub-section values
+                }
+
+                // Add the sub-section to the current section's Set if it's not "None"
+                if (subSectionValue && subSectionValue !== 'None') {
+                    sectionsAndSubSections[sectionValue].add(subSectionValue);
+                }
+            }
+        }
+
         for (const sectionKey in sectionsAndSubSections) {
             if (sectionsAndSubSections.hasOwnProperty(sectionKey)) {
                 const subsections = sectionsAndSubSections[sectionKey];
-                let subSectionCounter = 1;
-        
+
+                // Process the subsections for each section
                 subsections.forEach((subSection) => {
-                    customAttributes[`subsectionitem${subSectionCounter}`] = subSection;
-                    subSectionCounter++;
+                    // Perform actions with sectionKey (section name) and subSection (sub-section name)
+                    // This is where you can add the data to your array or perform other actions
+                    //console.log('Section:', sectionKey);
+                    //console.log('Sub-Section:', subSection);
+
+                    // Example: Add the data to your array
+                    customAttributesArray.push({
+                        sectionName: sectionKey,
+                        subSectionName: subSection,
+                    });
                 });
             }
         }
+
+        //console.log("sectionData",sectionData);
+        
+        
+        //console.log("nameValue", nameValue);
         //console.log("sectionsAndSubSections",sectionsAndSubSections);
         //console.log("customAttributes",customAttributes);
         customAttributesJSON = JSON.stringify(customAttributes);
 
-    }
+        // Assuming you have an array of items named 'filteredPublishItems'
+        // Object to store sections and their sub-sections
+        //const sectionName = articlesParseData.sectionname;
+        //const subSectionValue = articlesParseData.subsectionnameprime;
+        //console.log("filteredPublishItems",filteredPublishItems);
 
-    
+        for (const item of filteredPublishItems) {
+            //console.log("item.properties.section",item.properties.section);
 
-    catch (error) {
+            // Access the properties of each item
+            sectionName = item.properties.section?.select?.name;
+            const subSectionValue = item.properties['sub-section']?.select?.name;
+
+            // Initialize the section if it doesn't exist in the object
+            if (!sectionData[sectionName]) {
+                sectionData[sectionName] = {
+                    sectionName: sectionName,
+                    subsections: new Set(), // Initialize a Set to store unique sub-sections
+                };
+            }
+
+            // Add the sub-section to the corresponding section
+            sectionData[sectionName].subsections.add(subSectionValue);
+        }
+        
+        // Convert Sets to arrays for each section
+        for (const sectionName in sectionData) {
+            sectionData[sectionName].subsections = [...sectionData[sectionName].subsections];
+        }
+        //console.log(sectionData);
+        //console.log("customAttributesJSON",customAttributesJSON);
+
+        }catch (error) {
         console.error('Error:', error);
     }
-    //console.log("customAttributesJSON",customAttributesJSON);
 
-    return customAttributesJSON;   
+    return { customAttributesJSON, sectionData };
+
 }
 
 
 async function webflowCollection(pageIdToPublish) {
-    const customAttributesJSON = await fetchDatabaseItemMetaData(pageIdToPublish);
-    let parsedData = JSON.parse(customAttributesJSON);
+    //const customAttributesJSON = await fetchDatabaseItemMetaData(pageIdToPublish);
+    const { customAttributesJSON, sectionData } = await fetchDatabaseItemMetaData(pageIdToPublish);
+    let articlesParseData = JSON.parse(customAttributesJSON);
+    let itemCollectionId;
 
+    // take subsection item's ID with name that matches section item name into the REF field
+    // for each sub in section, take subsectionprime and put it into subsectionitem${1}+ attr
     try {
-        parsedData = JSON.parse(customAttributesJSON); // Parse JSON
+        //articlesParseData = JSON.parse(customAttributesJSON); // Parse JSON
         //console.log(parsedData);
 
         const API_KEY = process.env.WEBFLOW_API;
-        const COLLECTION_ID = process.env.WEBFLOW_COLLECTION_ID;
-        const API_ENDPOINT = `https://api.webflow.com/beta/collections/${COLLECTION_ID}/items`;
-    
+        const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID
+        const SECTIONS_COLLECTION_ID = process.env.SECTIONS_COLLECTION_ID
+        const SUBSECTIONS_COLLECTION_ID = process.env.SUBSECTIONS_COLLECTION_ID
+        const API_ENDPOINT_ARTICLES = `https://api.webflow.com/beta/collections/${ARTICLES_COLLECTION_ID}/items`;
+        const API_ENDPOINT_SECTIONS = `https://api.webflow.com/beta/collections/${SECTIONS_COLLECTION_ID}/items`;
+        const API_ENDPOINT_SUBSECTIONS = `https://api.webflow.com/beta/collections/${SUBSECTIONS_COLLECTION_ID}/items`;
+
         // Define options for the fetch request to query the collection
-        const queryOptions = {
+        const articlesQueryOptions = {
             method: 'GET',
             headers: {
             accept: 'application/json',
@@ -1254,84 +1359,258 @@ async function webflowCollection(pageIdToPublish) {
         };
 
 
+        /////////////////////////// CREATE/UPDATE NOTION ARTICLE IN WEBFLOW ///////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        
         // Make the API request to query the collection
-        const queryResponse = await fetch(API_ENDPOINT, queryOptions)
-        if (!queryResponse.ok) {
-            console.error('Error querying the collection:', queryResponse.statusText);
-            return;
-        }
+        const articlesQueryResponse = await fetch(API_ENDPOINT_ARTICLES, articlesQueryOptions)
+        //console.log("articlesQueryResponse",articlesQueryResponse);
 
-        let collectionData = await queryResponse.json();
+        let articlesCollectionData = await articlesQueryResponse.json();
         //console.log('API Response:', collectionData);
 
-        let itemId;
+        let itemuid;
 
         // Check if 'items' property exists in the API response
-        if (collectionData.hasOwnProperty('items') && Array.isArray(collectionData.items)) {
-            const items = collectionData.items;
-            const itemIdToFind = parsedData.itemuid;
-        
-            for (const item of items) {
-            if (item.fieldData && item.fieldData.itemuid === itemIdToFind) {
-                const itemId = item.id;
-                // You found the item's item_id, you can proceed with update or use itemId as needed
-                console.log('Found itemId:', itemId);
-                break; // Exit the loop since you found the item
-            }
+        if (articlesCollectionData.hasOwnProperty('items') && Array.isArray(articlesCollectionData.items)) {
+            const articlesCollectionitems = articlesCollectionData.items;
+            const itemIdToFind = articlesParseData["itemuid"];
+            //console.log('articlesCollectionData.items[0].id:', articlesCollectionData.items[0].id);
+
+            for (const item of articlesCollectionData.items) {
+                //console.log('itemuid:', item.fieldData.itemuid);
+                //console.log('itemIdToFind:', itemIdToFind);
+                itemCollectionId = item.id;
+                //console.log('itemCollectionId:', itemCollectionId);
+
+                if (item.fieldData.itemuid === itemIdToFind) {
+                    itemuid = item.fieldData.name;
+                    // You found the item's item_id, you can proceed with update or use itemId as needed
+                    console.log('Found matching article:',itemuid,'');
+                    break; // Exit the loop since you found the item
+                }else{
+                    console.log('Notion article (',item.fieldData.name,')has not been created in CMS. Creating it now.');
+                }
             }
         } else {
             // Handle the case where the 'items' property is missing or not an array
             console.error('Unexpected API response format');
         }
+        //console.log('itemuid:', itemuid);
 
         //console.log("attributeData",attributeData);
-        const DATA = {
+        const ARTICLES_DATA_CREATE = {
             isArchived: false,
             isDraft: false,
             fieldData: {
-                name: parsedData["name"],
-                slug: parsedData["slug"],
-                itemuid: parsedData["itemuid"],
-                sectionname: parsedData["sectionname"],
-                subsectionnameprime: parsedData["subsectionnameprime"],
-                htmlbodycode: parsedData["htmlbodycode"],
+                name: articlesParseData["name"],
+                slug: articlesParseData["slug"],
+                itemuid: articlesParseData["itemuid"],
+                sectionname: articlesParseData["sectionname"],
+                subsectionnameprime: articlesParseData["subsectionnameprime"],
+                //htmlbodycode: articlesParseData["htmlbodycode"],
             }
         };
-        for (const key in parsedData) {
+        const ARTICLES_DATA_UPDATE = {
+            isArchived: false,
+            isDraft: false,
+            fieldData: {
+                name: articlesParseData["name"],
+                //slug: articlesParseData["slug"],
+                itemuid: articlesParseData["itemuid"],
+                sectionname: articlesParseData["sectionname"],
+                subsectionnameprime: articlesParseData["subsectionnameprime"],
+                //htmlbodycode: articlesParseData["htmlbodycode"],
+            }
+        };
+
+        const FINAL_DATA = itemuid ? ARTICLES_DATA_UPDATE : ARTICLES_DATA_CREATE;
+        
+        for (const key in articlesParseData) {
             if (key.startsWith('subsectionitem')) {
-                DATA.fieldData[key] = parsedData[key];
+                FINAL_DATA.fieldData[key] = articlesParseData[key];
             }
         }
         const finalOptions = {
-            method: itemId ? 'PUT' : 'POST', // Use PUT for update and POST for create
+            method: itemuid ? 'PATCH' : 'POST', // Use PATCH for update and POST for create
             headers: {
               accept: 'application/json',
               'content-type': 'application/json',
               authorization: `Bearer ${API_KEY}`,
             },
-            body: JSON.stringify(DATA),
+            body: JSON.stringify(FINAL_DATA),
         };
     
         // Define the final API endpoint based on whether the item exists
-        const finalAPIEndpoint = itemId
-        ? `${API_ENDPOINT}/${itemId}` // If the item exists, use the item_id for update
-        : API_ENDPOINT; // If the item doesn't exist, create a new one
+        const articlesFinalAPIEndpoint = itemuid
+        ? `${API_ENDPOINT_ARTICLES}/${itemCollectionId}` // If the item exists, use the item_id for update
+        : API_ENDPOINT_ARTICLES; // If the item doesn't exist, create a new one
 
+        //console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
+        //console.log("finalOptions", finalOptions);
         // Make the API request
-        const finalQueryResponse = await fetch(finalAPIEndpoint, finalOptions)
-        if (!finalQueryResponse.ok) {
-            console.error('Error querying the collection:', finalQueryResponse.statusText);
-            return;
+        let finalQueryResponseJson;
+        try {
+            const finalQueryResponse = await fetch(articlesFinalAPIEndpoint, finalOptions);
+        
+            if (!finalQueryResponse.ok) {
+                throw new Error(`HTTP error! Status: ${finalQueryResponse.status}`);
+            }
+        
+            finalQueryResponseJson = await finalQueryResponse.json();
+            //console.log(finalQueryResponseJson);
+        } catch (error) {
+            console.error('Error:', error);
         }
-        const responseJson = await finalQueryResponse.json();
 
         if (finalOptions.method === 'POST') {
           // If the HTTP method was POST, it means a new item was created
-          console.log('New item created:', responseJson);
-        } else if (finalOptions.method === 'PUT') {
+          console.log('New item created:', finalQueryResponseJson);
+        } else if (finalOptions.method === 'PATCH') {
           // If the HTTP method was PUT, it means an existing item was updated
-          console.log('Item updated:', responseJson);
+          console.log('Item updated:', finalQueryResponseJson);
         }
+
+        itemCollectionId = finalQueryResponseJson.id
+        //console.log("itemCollectionId",itemCollectionId);
+
+
+
+        ////////////// UPDATE SUBSECTIONS IN SUBSECTION COLLECION IN WEBFLOW ///////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        //query subsection cms
+        //match item name to section name
+        //for each subsection in sectionArray, update subsectionitem${!} values if match
+        let subsectionCollectionItemID;
+        // Define options for the fetch request to query the collection
+        const subsectionsQueryOptions = {
+            method: 'GET',
+            headers: {
+            accept: 'application/json',
+            authorization: `Bearer ${API_KEY}`,
+            },
+        };
+        const subsectionsQueryResponse = await fetch(API_ENDPOINT_SUBSECTIONS, subsectionsQueryOptions)
+       
+        let subsectionsCollectionData;
+        let collectionItemId;
+        let itemFieldDataName;
+        let SUBSECTION_UPDATE_DATA = {};
+
+        try {
+            if (!subsectionsQueryResponse.ok) {
+                throw new Error(`Error fetching subsections data: ${subsectionsQueryResponse.statusText}`);
+            }
+        
+            subsectionsCollectionData = await subsectionsQueryResponse.json();
+            // Ensure subsectionsCollectionData is an object with an 'items' property
+            let subsectionsFromSectionDataArray;
+
+            for(const sectionX in sectionData){
+                
+                if (sectionData.hasOwnProperty(sectionX)) {
+
+                    subsectionsFromSectionDataArray = getSubsectionsBySectionName(sectionData, sectionX);
+
+                    //let collectionItemName = item.fieldData.name;
+                    for (const item of subsectionsCollectionData.items) {
+                        if(item.fieldData.name === sectionX){
+                            itemFieldDataName = item.fieldData.name;
+                            collectionItemId = item.id;
+                        }
+                    }
+                    
+                    //console.log("sectionX", sectionX);                    
+                    if(itemFieldDataName === sectionX){
+                        
+                        SUBSECTION_UPDATE_DATA = {
+                            isArchived: false,
+                            isDraft: false,
+                            fieldData: {
+                                name: sectionX,
+                            }
+                        };
+                        //console.log("itemSectionName", itemName);
+                        //console.log("sectionX", sectionX);
+                        //console.log("subsectionsFromSectionDataArray", subsectionsFromSectionDataArray);
+                        //console.log("subsectionsFromSectionDataArray", subsectionsFromSectionDataArray);
+                        for (let i = 1; i <= 6; i++){
+                            const subsectionKey = `subsectionitem${i}`;
+                            SUBSECTION_UPDATE_DATA.fieldData[subsectionKey] = 'None';
+                        }
+
+                        const subsectionsFromSectionDataArray = sectionData[sectionX].subsections;
+                        // Update the item's subsection properties
+                        for (let i = 1; i <= subsectionsFromSectionDataArray.length; i++) {
+                            const subsectionName = subsectionsFromSectionDataArray[i - 1];
+                            const subsectionKey = `subsectionitem${i}`;
+                            
+                            SUBSECTION_UPDATE_DATA.fieldData[subsectionKey] = subsectionName;
+
+                        }
+
+                        //console.log('After updating:');
+                        //console.log(SUBSECTION_UPDATE_DATA);
+                    }
+                }
+            }
+
+            //console.log("SUBSECTION_UPDATE_DATA",SUBSECTION_UPDATE_DATA);
+
+            const updateSubsectionCollectionOptions = {
+                method: 'PATCH',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${API_KEY}`,
+                },
+                body: JSON.stringify(SUBSECTION_UPDATE_DATA),
+            };
+        
+            // Define the final API endpoint based on whether the item exists
+            const API_ENDPOINT_SUBSECTION_UPDATE = `${API_ENDPOINT_SUBSECTIONS}/${collectionItemId}`;
+    
+            // Make the API request
+            let subsectionsUpdateResponseJson;
+            try {
+                
+                //console.log("updateSubsectionCollectionOptions",updateSubsectionCollectionOptions);
+
+                const subsectionsUpdateResponse = await fetch(API_ENDPOINT_SUBSECTION_UPDATE, updateSubsectionCollectionOptions);
+            
+                if (!subsectionsUpdateResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${subsectionsUpdateResponse.status}`);
+                }
+            
+                subsectionsUpdateResponseJson = await subsectionsUpdateResponse.json();
+                
+                console.log("subsectionsUpdateResponseJson",subsectionsUpdateResponseJson);
+            
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+
+        } catch (error) {
+            console.error('Error fetching/parsing subsections data:', error);
+            // Handle the error as needed.
+        }
+
+        function getSubsectionsBySectionName(sectionData, targetSectionName) {
+            if (sectionData.hasOwnProperty(targetSectionName)) {
+                const section = sectionData[targetSectionName];
+                if (section.subsections && section.subsections.length > 0) {
+                    return section.subsections;
+                } else {
+                    return "No subsections found for the section.";
+                }
+            } else {
+                return "Section not found in sectionData.";
+            }
+        }
+        //const subsections = getSubsectionsBySectionName(sectionData, XsectionName)
+
 
     } catch (error) {
         console.error('Error:', error);
@@ -1339,20 +1618,6 @@ async function webflowCollection(pageIdToPublish) {
 }
 //webflowCollection(pageIdToPublishLOCAL);
 
-// Call the function to fetch database items
-// fetchDatabaseSections()
-//   .then(sections => {
-//     // Process sections and items
-//     for (const sectionName in sections) {
-//       sections[sectionName].forEach(item => {
-//         //console.log(`  Item: ${item.itemName}`);
-//         //console.log(`  Sub-Section: ${item.subSectionValue}`);
-//       });
-//     }
-//   })
-//   .catch(error => {
-//     // Handle errors
-//   });
   
 
 function open(bin, index) {
