@@ -1367,9 +1367,9 @@ async function webflowCollection(pageIdToPublish) {
         //console.log("articlesQueryResponse",articlesQueryResponse);
 
         let articlesCollectionData = await articlesQueryResponse.json();
-        //console.log('API Response:', collectionData);
+        //console.log('API Response - Entire Database:', articlesCollectionData);
 
-        let itemuid;
+        let foundItemItemuid;
 
         // Check if 'items' property exists in the API response
         if (articlesCollectionData.hasOwnProperty('items') && Array.isArray(articlesCollectionData.items)) {
@@ -1387,9 +1387,9 @@ async function webflowCollection(pageIdToPublish) {
                 //console.log('itemCollectionId:', itemCollectionId);
 
                 if (item.fieldData.itemuid === itemIdToFind) {
-                    itemuid = item.fieldData.name;
+                    foundItemItemuid = item.fieldData.name;
                     // You found the item's item_id, you can proceed with update or use itemId as needed
-                    console.log('Found matching article:',itemuid,'');
+                    console.log('Found matching article:',foundItemItemuid,'');
                     break; // Exit the loop since you found the item
                 }else if (item.fieldData.itemuid != itemIdToFind) {
                     console.log('Notion article "',item.fieldData.name,'" has not been created in CMS. Creating it now.');
@@ -1398,7 +1398,7 @@ async function webflowCollection(pageIdToPublish) {
             }
         } else {
             // Handle the case where the 'items' property is missing or not an array
-            console.error('Unexpected API response format');
+            console.error('Requested Notion article ID not found in Database');
         }
         //console.log('itemuid:', itemuid);
 
@@ -1428,7 +1428,7 @@ async function webflowCollection(pageIdToPublish) {
             }
         };
 
-        const FINAL_DATA = itemuid ? ARTICLES_DATA_UPDATE : ARTICLES_DATA_CREATE;
+        const FINAL_DATA = foundItemItemuid ? ARTICLES_DATA_UPDATE : ARTICLES_DATA_CREATE;
         
         // for (const key in articlesParseData) {
         //     if (key.startsWith('subsectionitem')) {
@@ -1436,7 +1436,7 @@ async function webflowCollection(pageIdToPublish) {
         //     }
         // }
         const finalOptions = {
-            method: itemuid ? 'PATCH' : 'POST', // Use PATCH for update and POST for create
+            method: foundItemItemuid ? 'PATCH' : 'POST', // Use PATCH for update and POST for create
             headers: {
               accept: 'application/json',
               'content-type': 'application/json',
@@ -1446,33 +1446,39 @@ async function webflowCollection(pageIdToPublish) {
         };
     
         // Define the final API endpoint based on whether the item exists
-        const articlesFinalAPIEndpoint = itemuid
+        const articlesFinalAPIEndpoint = foundItemItemuid
         ? `${API_ENDPOINT_ARTICLES}/${itemCollectionId}` // If the item exists, use the item_id for update
         : API_ENDPOINT_ARTICLES; // If the item doesn't exist, create a new one
 
-        //console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
-        //console.log("finalOptions", finalOptions);
+        console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
+        console.log("finalOptions", finalOptions);
         // Make the API request
         let finalQueryResponseJson;
         try {
             const finalQueryResponse = await fetch(articlesFinalAPIEndpoint, finalOptions);
         
+            if (finalOptions.method === 'POST') {
+                // If the HTTP method was POST, it means a new item was created
+                finalQueryResponseJson = await finalQueryResponse.json();
+                console.log('New item created:', finalQueryResponseJson.substring(0, 500) + '...');
+                //console.log('New item created:', finalQueryResponseJson);
+            } else if (finalOptions.method === 'PATCH') {
+                // If the HTTP method was PUT, it means an existing item was updated
+                finalQueryResponseJson = await finalQueryResponse.json();
+                console.log('Item updated:', finalQueryResponseJson.substring(0, 500) + '...');
+                //console.log('Item updated:', finalQueryResponseJson);
+            }
+
             if (!finalQueryResponse.ok) {
                 throw new Error(`HTTP error! Status: ${finalQueryResponse.status}`);
             }
         
-            finalQueryResponseJson = await finalQueryResponse.json();
-            //console.log(finalQueryResponseJson);
-        } catch (error) {
-            console.error('Error:', error);
-        }
+            //console.log("finalQueryResponseJson",finalQueryResponseJson);
 
-        if (finalOptions.method === 'POST') {
-          // If the HTTP method was POST, it means a new item was created
-          console.log('New item created:', finalQueryResponseJson);
-        } else if (finalOptions.method === 'PATCH') {
-          // If the HTTP method was PUT, it means an existing item was updated
-          console.log('Item updated:', finalQueryResponseJson);
+        } catch (error) {
+
+            console.error('Error:', error);
+
         }
 
         itemCollectionId = finalQueryResponseJson.id
