@@ -1200,7 +1200,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         customAttributes.itemuid = idValue;
         customAttributes.sectionname = sectionValue;
         customAttributes.subsectionnameprime = subSectionValue;
-        //customAttributes.htmlbodycode = html;
+        customAttributes.htmlbodycode = html;
 
         console.log('Publish is set to true in Notion for "', nameValue,'", posting to Site.');
 
@@ -1408,7 +1408,7 @@ async function webflowCollection(pageIdToPublish) {
                 itemuid: articlesParseData["itemuid"],
                 sectionname: articlesParseData["sectionname"],
                 subsectionnameprime: articlesParseData["subsectionnameprime"],
-                //htmlbodycode: articlesParseData["htmlbodycode"],
+                htmlbodycode: articlesParseData["htmlbodycode"],
             }
         };
         const ARTICLES_DATA_UPDATE = {
@@ -1420,17 +1420,17 @@ async function webflowCollection(pageIdToPublish) {
                 itemuid: articlesParseData["itemuid"],
                 sectionname: articlesParseData["sectionname"],
                 subsectionnameprime: articlesParseData["subsectionnameprime"],
-                //htmlbodycode: articlesParseData["htmlbodycode"],
+                htmlbodycode: articlesParseData["htmlbodycode"],
             }
         };
 
         const FINAL_DATA = itemuid ? ARTICLES_DATA_UPDATE : ARTICLES_DATA_CREATE;
         
-        for (const key in articlesParseData) {
-            if (key.startsWith('subsectionitem')) {
-                FINAL_DATA.fieldData[key] = articlesParseData[key];
-            }
-        }
+        // for (const key in articlesParseData) {
+        //     if (key.startsWith('subsectionitem')) {
+        //         FINAL_DATA.fieldData[key] = articlesParseData[key];
+        //     }
+        // }
         const finalOptions = {
             method: itemuid ? 'PATCH' : 'POST', // Use PATCH for update and POST for create
             headers: {
@@ -1574,7 +1574,7 @@ async function webflowCollection(pageIdToPublish) {
             // Make the API request
             let subsectionsUpdateResponseJson;
             try {
-                
+
                 //console.log("updateSubsectionCollectionOptions",updateSubsectionCollectionOptions);
 
                 const subsectionsUpdateResponse = await fetch(API_ENDPOINT_SUBSECTION_UPDATE, updateSubsectionCollectionOptions);
