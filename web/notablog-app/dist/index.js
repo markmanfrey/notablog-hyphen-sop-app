@@ -1128,8 +1128,21 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
     //console.log(html);
     const html = await processHtml();
-      
-    // createAndSavePDF();
+
+    // const html2pdf = require('html2pdf.js');
+    // // createAndSavePDF();
+    // function generatePDF() {
+    //     const pdfElement = this.html.current;
+    // 
+    //     if (!pdfElement) return;
+    //  
+    //     self.html2pdf().from(pdfElement).outputPdf().then((pdf) => {
+    //         // You can save or display the PDF as needed
+    //         // Example: Save the PDF
+    //         pdf.save('../document.pdf');
+    //       });
+    //   }
+    // generatePDF();
 
     return html;
 
@@ -1370,12 +1383,15 @@ async function webflowCollection(pageIdToPublish) {
         //console.log('API Response - Entire Database:', articlesCollectionData);
 
         let foundItemItemuid;
+        let itemSectionNameToFind;
 
         // Check if 'items' property exists in the API response
         if (articlesCollectionData.hasOwnProperty('items') && Array.isArray(articlesCollectionData.items)) {
             const articlesCollectionitems = articlesCollectionData.items;
             const itemIdToFind = articlesParseData["itemuid"];
-            //console.log('articlesCollectionData.items[0].id:', articlesCollectionData.items[0].id);
+            itemSectionNameToFind = articlesParseData["sectionname"];
+            console.log('articlesCollectionData.items[0].id:', articlesCollectionData.items[0].id);
+            console.log('itemSectionNameToFind:', itemSectionNameToFind);
 
             for (const item of articlesCollectionData.items) {
                 
@@ -1450,8 +1466,8 @@ async function webflowCollection(pageIdToPublish) {
         ? `${API_ENDPOINT_ARTICLES}/${itemCollectionId}` // If the item exists, use the item_id for update
         : API_ENDPOINT_ARTICLES; // If the item doesn't exist, create a new one
 
-        console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
-        console.log("finalOptions", finalOptions);
+        //console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
+        //console.log("finalOptions", finalOptions);
         // Make the API request
         let finalQueryResponseJson;
         try {
@@ -1460,13 +1476,13 @@ async function webflowCollection(pageIdToPublish) {
             if (finalOptions.method === 'POST') {
                 // If the HTTP method was POST, it means a new item was created
                 finalQueryResponseJson = await finalQueryResponse.json();
-                console.log('New item created:', finalQueryResponseJson.substring(0, 500) + '...');
-                //console.log('New item created:', finalQueryResponseJson);
+                //console.log('New item created:', finalQueryResponseJson.substring(0, 500) + '...');
+                console.log('New item created:', finalQueryResponseJson);
             } else if (finalOptions.method === 'PATCH') {
                 // If the HTTP method was PUT, it means an existing item was updated
                 finalQueryResponseJson = await finalQueryResponse.json();
-                console.log('Item updated:', finalQueryResponseJson.substring(0, 500) + '...');
-                //console.log('Item updated:', finalQueryResponseJson);
+                //console.log('Item updated:', finalQueryResponseJson.substring(0, 500) + '...');
+                console.log('Item updated:', finalQueryResponseJson);
             }
 
             if (!finalQueryResponse.ok) {
@@ -1525,7 +1541,7 @@ async function webflowCollection(pageIdToPublish) {
 
                     //let collectionItemName = item.fieldData.name;
                     for (const item of subsectionsCollectionData.items) {
-                        if(item.fieldData.name === sectionX){
+                        if(itemSectionNameToFind === sectionX){
                             itemFieldDataName = item.fieldData.name;
                             collectionItemId = item.id;
                         }
