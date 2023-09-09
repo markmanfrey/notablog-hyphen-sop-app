@@ -1407,25 +1407,25 @@ async function webflowCollection(pageIdToPublish) {
         //console.log('API Response - Entire Database:', articlesCollectionData);
 
         let foundItemItemuid;
-        let foundItemItemName;
+        let foundItemName;
         let itemSectionNameToFind;
         let itemNameToFind;
-        let itemIdToFind;
+        let itemUidToFind;
         let htmlbodycode;
 
         // Check if 'items' property exists in the API response
             if (articlesCollectionData.hasOwnProperty('items') && Array.isArray(articlesCollectionData.items)) {
-                itemIdToFind = articlesParseData["itemuid"];
+                itemUidToFind = articlesParseData["itemuid"];
                 itemNameToFind = articlesParseData["name"];
                 itemSectionNameToFind = articlesParseData["sectionname"];
                 htmlbodycode = articlesParseData["htmlbodycode"]
                 articleCollectionItemId = "None";
-                foundItemItemName = "None";
+                foundItemName = "None";
                 foundItemItemuid = "None";
 
                 console.log("LOOP: if (articlesCollectionData.hasOwnProperty('items')");
                 console.log("")
-                console.log('   itemIdToFind:', itemIdToFind);
+                console.log('   itemIdToFind:', itemUidToFind);
                 console.log("--------------------------------------------------------")
 
                 console.log('   itemNameToFind:', itemNameToFind);
@@ -1447,7 +1447,10 @@ async function webflowCollection(pageIdToPublish) {
                         console.log("")
                         console.log("   itemuid",item.fieldData.itemuid);
                         console.log("--------------------------------------------------------")
-                        //console.log('itemIdToFind:', itemIdToFind);
+
+                        console.log('   foundItemItemuid:', itemUidToFind);
+                        console.log("--------------------------------------------------------")
+                        
                         console.log('   item.fieldData.name:', item.fieldData.name);
                         console.log("--------------------------------------------------------")
 
@@ -1456,14 +1459,20 @@ async function webflowCollection(pageIdToPublish) {
                         console.log("--------------------------------------------------------")
                         console.log("")
 
-                        if (item.fieldData.name === itemNameToFind) {
-                            articleCollectionItemId = item.id;
+                        if (item.fieldData.name === itemNameToFind && item.fieldData.itemuid === itemUidToFind) {
                             
+                            articleCollectionItemId = item.id;
+                            foundItemItemuid = item.fieldData.itemuid;
+                            foundItemName = item.fieldData.name;
+
                             console.log("LOOP: if (item.fieldData.name === itemNameToFind)");
                             console.log("")
                             console.log("   itemuid",item.fieldData.itemuid);
                             console.log("--------------------------------------------------------")
-                            //console.log('itemIdToFind:', itemIdToFind);
+
+                            console.log('   foundItemItemuid:', itemUidToFind);
+                            console.log("--------------------------------------------------------")
+
                             console.log('   item.fieldData.name:', item.fieldData.name);
                             console.log("--------------------------------------------------------")
     
@@ -1471,6 +1480,9 @@ async function webflowCollection(pageIdToPublish) {
                             console.log("--------------------------------------------------------")
 
                             console.log('   articleCollectionItemId:', articleCollectionItemId);
+                            console.log("--------------------------------------------------------")
+
+                            console.log('   Found the matching article:',foundItemName,'in CMS and will update it.');
                             console.log("--------------------------------------------------------")
                             
                             console.log("--------------------------------------------------------")
@@ -1480,15 +1492,16 @@ async function webflowCollection(pageIdToPublish) {
                             break; // If you only want to find the first matching item and exit the loop
                         }
 
-                        if (item.fieldData.itemuid === itemIdToFind) {
+                        // if (item.fieldData.itemuid === itemUidToFind) {
 
-                            foundItemItemName = item.fieldData.name;
-                            // You found the item's item_id, you can proceed with update or use itemId as needed
-                            console.log('   Found the matching article:',foundItemItemName,'in CMS and will update it.');
-                            console.log("--------------------------------------------------------")
-                            break; // Exit the loop since you found the item
+                        //     foundItemItemName = item.fieldData.name;
+                        //     // You found the item's item_id, you can proceed with update or use itemId as needed
+                        //     console.log('   Found the matching article:',foundItemItemName,'in CMS and will update it.');
+                        //     console.log("--------------------------------------------------------")
+                        //     break; // Exit the loop since you found the item
                         
-                        }else if (item.fieldData.itemuid != itemIdToFind) {
+                        // }
+                        if (item.fieldData.itemuid != itemUidToFind) {
 
                             console.log('   Notion article "',itemNameToFind,'" has not been created in CMS. Creating it now.');
                             console.log("--------------------------------------------------------")
@@ -1505,11 +1518,11 @@ async function webflowCollection(pageIdToPublish) {
                     console.log("   articleCollectionItemId:",articleCollectionItemId);
                     console.log("--------------------------------------------------------")
                     
-                    console.log("   itemIdToFind:",itemIdToFind);
+                    console.log("   itemUidToFind:",itemUidToFind);
                     console.log("--------------------------------------------------------")
                     
                     //console.log('itemIdToFind:', itemIdToFind);
-                    console.log('   foundItemItemName:', foundItemItemName);
+                    console.log('   foundItemItemName:', foundItemName);
                     console.log("--------------------------------------------------------")
 
                     console.log('   itemNameToFind:', itemNameToFind);
@@ -1550,75 +1563,15 @@ async function webflowCollection(pageIdToPublish) {
             }
         };
 
-        const FINAL_DATA = foundItemItemuid === "None" ? ARTICLES_DATA_CREATE : ARTICLES_DATA_UPDATE;
         
-        // for (const key in articlesParseData) {
-        //     if (key.startsWith('subsectionitem')) {
-        //         FINAL_DATA.fieldData[key] = articlesParseData[key];
-        //     }
-        // }
-        const finalOptions = {
-            method: foundItemItemuid === "None" ? 'POST' : 'PATCH', // Use PATCH for update and POST for create
-            headers: {
-              accept: 'application/json',
-              'content-type': 'application/json',
-              authorization: `Bearer ${API_KEY}`,
-            },
-            body: JSON.stringify(FINAL_DATA),
-        };
-    
-        // Define the final API endpoint based on whether the item exists
-        // If the item exists, use the item_id for update // If the item doesn't exist, create a new one
-        const articlesFinalAPIEndpoint = foundItemItemuid === "None" ? API_ENDPOINT_ARTICLES : `${API_ENDPOINT_ARTICLES}/${articleCollectionItemId}`;
-
-        //console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
-        //console.log("articleCollectionItemId", articleCollectionItemId);
-        //console.log("finalOptions", finalOptions);
-        // Make the API request
-        let finalQueryResponseJson;
-        try {
-            const finalQueryResponse = await fetch(articlesFinalAPIEndpoint, finalOptions);
-            finalQueryResponseJson = await finalQueryResponse.json();
-            console.log("finalQueryResponseJson", finalQueryResponseJson);
-
-            if (finalOptions.method === 'POST') {
-                // If the HTTP method was POST, it means a new item was created
-                //console.log('New item created:', finalQueryResponseJson.substring(0, 500) + '...');
-                console.log('   New item created:', itemNameToFind);
-                console.log("--------------------------------------------------------")
-
-            }
-            
-            if (finalOptions.method === 'PATCH') {
-                // If the HTTP method was PUT, it means an existing item was updated
-                //console.log('Item updated:', finalQueryResponseJson.substring(0, 500) + '...');
-                console.log('   Item updated:', itemNameToFind);
-                console.log("--------------------------------------------------------")
-
-            }
-
-            if (!finalQueryResponse.ok) {
-                throw new Error(`HTTP error! Status: ${finalQueryResponse.status}`);
-            }
-            else if(finalQueryResponse.ok) {
-                console.log(`   Article API Response Status: ${finalQueryResponse.status}`);
-                console.log("--------------------------------------------------------")
-            }
-        
-
-        } catch (error) {
-
-            console.error('Error:', error);
-
-        }
 
         //itemCollectionId = finalQueryResponseJson.id
         //console.log("itemCollectionId",itemCollectionId);
 
 
-
 ////////////// UPDATE SUBSECTIONS IN SUBSECTION COLLECION IN WEBFLOW ///////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //query subsection cms
         //match item name to section name
@@ -1666,6 +1619,8 @@ async function webflowCollection(pageIdToPublish) {
                             console.log("   itemFieldDataName", itemFieldDataName);
                             console.log("   subsectionCollectionItemId", subsectionCollectionItemId);
                             console.log("--------------------------------------------------------")
+                            console.log("")
+
 
                         }
                     }
@@ -1690,22 +1645,26 @@ async function webflowCollection(pageIdToPublish) {
                         };
                         //console.log("itemSectionName", itemName);
                         //console.log("sectionX", sectionX);
-                        //console.log("subsectionsFromSectionDataArray", subsectionsFromSectionDataArray);
+                        const subsectionsFromSectionDataArray = sectionData[sectionX].subsections;
+
                         //console.log("subsectionsFromSectionDataArray", subsectionsFromSectionDataArray);
                         for (let i = 1; i <= 6; i++){
                             const subsectionKey = `subsectionitem${i}`;
                             SUBSECTION_UPDATE_DATA.fieldData[subsectionKey] = 'None';
-                            ARTICLE_UPDATE2_DATA.fieldData[subsectionKey] = 'None';
+                            ARTICLES_DATA_CREATE.fieldData[subsectionKey] = 'None';
+                            ARTICLES_DATA_UPDATE.fieldData[subsectionKey] = 'None';
+
                         }
 
-                        const subsectionsFromSectionDataArray = sectionData[sectionX].subsections;
                         // Update the item's subsection properties
                         for (let i = 1; i <= subsectionsFromSectionDataArray.length; i++) {
                             const subsectionName = subsectionsFromSectionDataArray[i - 1];
                             const subsectionKey = `subsectionitem${i}`;
                             
                             SUBSECTION_UPDATE_DATA.fieldData[subsectionKey] = subsectionName;
-                            ARTICLE_UPDATE2_DATA.fieldData[subsectionKey] = subsectionName
+                            ARTICLES_DATA_CREATE.fieldData[subsectionKey] = subsectionName;
+                            ARTICLES_DATA_UPDATE.fieldData[subsectionKey] = subsectionName;
+
                         }
 
                         //console.log('After updating:');
@@ -1769,31 +1728,96 @@ async function webflowCollection(pageIdToPublish) {
                 console.error('Error:', error);
             }
 
+            console.log(`   Item "${foundItemName}" with UID of ${foundItemItemuid} being processed.`)
+            console.log("--------------------------------------------------------")
+            const FINAL_DATA = foundItemItemuid === "None" ? ARTICLES_DATA_CREATE : ARTICLES_DATA_UPDATE;
+        
+            // for (const key in articlesParseData) {
+            //     if (key.startsWith('subsectionitem')) {
+            //         FINAL_DATA.fieldData[key] = articlesParseData[key];
+            //     }
+            // }
+            const finalOptions = {
+                method: foundItemItemuid === "None" ? 'POST' : 'PATCH', // Use PATCH for update and POST for create
+                headers: {
+                accept: 'application/json',
+                'content-type': 'application/json',
+                authorization: `Bearer ${API_KEY}`,
+                },
+                body: JSON.stringify(FINAL_DATA),
+            };
+        
+            // Define the final API endpoint based on whether the item exists
+            // If the item exists, use the item_id for update // If the item doesn't exist, create a new one
+            const articlesFinalAPIEndpoint = foundItemItemuid === "None" ? API_ENDPOINT_ARTICLES : `${API_ENDPOINT_ARTICLES}/${articleCollectionItemId}`;
+
+            //console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
+            //console.log("articleCollectionItemId", articleCollectionItemId);
+            //console.log("finalOptions", finalOptions);
+            // Make the API request
+            let finalQueryResponseJson;
             try {
+                const finalQueryResponse = await fetch(articlesFinalAPIEndpoint, finalOptions);
+                finalQueryResponseJson = await finalQueryResponse.json();
+                //console.log("finalQueryResponseJson", finalQueryResponseJson);
 
-                //console.log("updateArticleCollectionOptions",updateArticleCollectionOptions);
-                //console.log("API_ENDPOINT_ARTICLE_UPDATE",API_ENDPOINT_ARTICLE_UPDATE);
-                const articlesUpdateResponse = await fetch(API_ENDPOINT_ARTICLE_UPDATE, updateArticleCollectionOptions);
-                articlesUpdateResponseJson = await articlesUpdateResponse.json();
-                //console.log("articlesUpdateResponse",articlesUpdateResponse);
-
-                if (!articlesUpdateResponse.ok) {
-                    //console.log("articlesUpdateResponseJson",articlesUpdateResponseJson);
-                    throw new Error(`HTTP error! Status: ${articlesUpdateResponse.status}`);
-                }
-                else if(articlesUpdateResponse.ok) {
-                    
-                    console.log(`   Section "${itemNameToFind}" with ID of ${articleCollectionItemId}`)
-                    console.log("--------------------------------------------------------")
-
-                    console.log(`   Subsection API Response Status: ${articlesUpdateResponse.status}`);
+                if (finalOptions.method === 'POST') {
+                    // If the HTTP method was POST, it means a new item was created
+                    //console.log('New item created:', finalQueryResponseJson.substring(0, 500) + '...');
+                    console.log('   New item created:', itemNameToFind);
                     console.log("--------------------------------------------------------")
 
                 }
-                            
+                
+                if (finalOptions.method === 'PATCH') {
+                    // If the HTTP method was PUT, it means an existing item was updated
+                    //console.log('Item updated:', finalQueryResponseJson.substring(0, 500) + '...');
+                    console.log('   Item updated:', itemNameToFind);
+                    console.log("--------------------------------------------------------")
+
+                }
+
+                if (!finalQueryResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${finalQueryResponse.status}`);
+                }
+                else if(finalQueryResponse.ok) {
+                    console.log(`   Article API Response Status: ${finalQueryResponse.status}`);
+                    console.log("--------------------------------------------------------")
+                }
+            
+
             } catch (error) {
+
                 console.error('Error:', error);
+
             }
+
+            // try {
+
+            //     //console.log("updateArticleCollectionOptions",updateArticleCollectionOptions);
+            //     //console.log("API_ENDPOINT_ARTICLE_UPDATE",API_ENDPOINT_ARTICLE_UPDATE);
+            //     const articlesUpdateResponse = await fetch(API_ENDPOINT_ARTICLE_UPDATE, updateArticleCollectionOptions);
+            //     articlesUpdateResponseJson = await articlesUpdateResponse.json();
+            //     console.log("articlesUpdateResponse",articlesUpdateResponse);
+            //     console.log("articlesUpdateResponseJson",articlesUpdateResponseJson);
+
+            //     if (!articlesUpdateResponse.ok) {
+            //         //console.log("articlesUpdateResponseJson",articlesUpdateResponseJson);
+            //         throw new Error(`HTTP error! Status: ${articlesUpdateResponse.status}`);
+            //     }
+            //     else if(articlesUpdateResponse.ok) {
+                    
+            //         console.log(`   Section "${itemNameToFind}" with ID of ${articleCollectionItemId}`)
+            //         console.log("--------------------------------------------------------")
+
+            //         console.log(`   Subsection API Response Status: ${articlesUpdateResponse.status}`);
+            //         console.log("--------------------------------------------------------")
+
+            //     }
+                            
+            // } catch (error) {
+            //     console.error('Error:', error);
+            // }
 
 
         } catch (error) {
@@ -1801,14 +1825,18 @@ async function webflowCollection(pageIdToPublish) {
             // Handle the error as needed.
         }
 
+        //console.log("sectionData",sectionData);
         function getSubsectionsBySectionName(sectionData, targetSectionName) {
             if (sectionData.hasOwnProperty(targetSectionName)) {
+
                 const section = sectionData[targetSectionName];
+
                 if (section.subsections && section.subsections.length > 0) {
                     return section.subsections;
                 } else {
                     return "No subsections found for the section.";
                 }
+
             } else {
                 return "Section not found in sectionData.";
             }
