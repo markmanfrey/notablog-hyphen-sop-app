@@ -1364,13 +1364,92 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
 
 }
 
+async function collectionDatabaseCheck(){
+
+    const API_KEY = process.env.WEBFLOW_API;
+    const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID;
+    const API_ENDPOINT_ARTICLES = `https://api.webflow.com/beta/collections/${ARTICLES_COLLECTION_ID}/items`;
+
+    const articlesQueryOptions = {
+        method: 'GET',
+        headers: {
+        accept: 'application/json',
+        authorization: `Bearer ${API_KEY}`,
+        },
+    };
+
+    const articlesQueryResponse = await fetch(API_ENDPOINT_ARTICLES, articlesQueryOptions)
+    //console.log("articlesQueryResponse",articlesQueryResponse);
+    let webflowArticlesCollectionData = await articlesQueryResponse.json();
+
+    // Query notion database
+    const databaseQueryOptions = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'Notion-Version': '2022-06-28',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
+        },
+        body: JSON.stringify({page_size: 100}),
+    };
+    const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+    const notionDatabaseApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
+    const notionDatabaseQueryResponse = await fetch(notionDatabaseApiUrl, databaseQueryOptions);
+    let notionDatabaseQueryResponseData = await notionDatabaseQueryResponse.json();
+
+    //console.log("notionDaatabaseQueryResponse",notionDatabaseQueryResponse);
+    const fieldsToExclude = ["htmlbodycode"]; // Fields to exclude
+    
+    // for (const key in notionDatabaseQueryResponseData) {
+    //     if (notionDatabaseQueryResponseData.hasOwnProperty(key) && !fieldsToExclude.includes(key)) {
+    //         console.log(`${key}: ${notionDatabaseQueryResponseData[key]}`);
+    //     }
+    // }
+
+    const webflowArticlesCollectionItems = webflowArticlesCollectionData.items;
+
+    // Create an array to store the names of Webflow articles
+    const webflowArticleNames = webflowArticlesCollectionItems.map((article) => article.fieldData.name);
+    let numberOfArticlesNotFound = 0;
+    let notionArticleName;
+    let articlesNotFound = [];
+
+    for (const item of notionDatabaseQueryResponseData.results) {
+                    
+        notionArticleName = item.properties.name.title[0].text.content;
+
+        // Check if the Notion article name exists in Webflow
+        if (!webflowArticleNames.includes(notionArticleName)) {
+            // Print the Notion article that is not found in Webflow
+            articlesNotFound.push(notionArticleName);
+            numberOfArticlesNotFound++;
+        }
+        
+    }
+    if(numberOfArticlesNotFound > 0){
+        console.log("");
+        console.log("--------------------------------------------------------");
+        console.log("--------------------------------------------------------");
+        console.log("");
+        console.log(`(${numberOfArticlesNotFound}) Notion articles not found in Webflow:`);
+        console.log("     -----------------------------------------");
+        console.log('    ',articlesNotFound.join('\n     '));
+        console.log("");
+        console.log("--------------------------------------------------------");
+        console.log("--------------------------------------------------------");
+        console.log("");
+    }
+
+}
 
 async function webflowCollection(pageIdToPublish) {
     //const customAttributesJSON = await fetchDatabaseItemMetaData(pageIdToPublish);
     const { customAttributesJSON, sectionData } = await fetchDatabaseItemMetaData(pageIdToPublish);
     let articlesParseData = JSON.parse(customAttributesJSON);
     let articleCollectionItemId;
-    //console.log('   articlesParseData:', articlesParseData);
+
+    collectionDatabaseCheck();
 
     // take subsection item's ID with name that matches section item name into the REF field
     // for each sub in section, take subsectionprime and put it into subsectionitem${1}+ attr
@@ -1379,12 +1458,15 @@ async function webflowCollection(pageIdToPublish) {
         //console.log(parsedData);
 
         const API_KEY = process.env.WEBFLOW_API;
-        const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID
-        const SECTIONS_COLLECTION_ID = process.env.SECTIONS_COLLECTION_ID
-        const SUBSECTIONS_COLLECTION_ID = process.env.SUBSECTIONS_COLLECTION_ID
+        const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID;
+        const SECTIONS_COLLECTION_ID = process.env.SECTIONS_COLLECTION_ID;
+        const SUBSECTIONS_COLLECTION_ID = process.env.SUBSECTIONS_COLLECTION_ID;
+        const TABLEOFCONTENTS_COLLECTION_ID = process.env.TABLEOFCONTENTS_COLLECTION_ID;
         const API_ENDPOINT_ARTICLES = `https://api.webflow.com/beta/collections/${ARTICLES_COLLECTION_ID}/items`;
         const API_ENDPOINT_SECTIONS = `https://api.webflow.com/beta/collections/${SECTIONS_COLLECTION_ID}/items`;
         const API_ENDPOINT_SUBSECTIONS = `https://api.webflow.com/beta/collections/${SUBSECTIONS_COLLECTION_ID}/items`;
+        const API_ENDPOINT_TABLEOFCONTENTS = `https://api.webflow.com/v2/collections/${TABLEOFCONTENTS_COLLECTION_ID}/items`;
+
 
         // Define options for the fetch request to query the collection
         const articlesQueryOptions = {
@@ -1396,14 +1478,13 @@ async function webflowCollection(pageIdToPublish) {
         };
 
 
-        /////////////////////////// CREATE/UPDATE NOTION ARTICLE IN WEBFLOW ///////////////////////////
+        /////////////////////////// QUERY ARTICLE COLLECTION AND PREP FOR CREATE ITEM OR UPDATE ITEM ///////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////
         
         // Make the API request to query the collection
         const articlesQueryResponse = await fetch(API_ENDPOINT_ARTICLES, articlesQueryOptions)
         //console.log("articlesQueryResponse",articlesQueryResponse);
-
-        let articlesCollectionData = await articlesQueryResponse.json();
+        let webflowArticlesCollectionData = await articlesQueryResponse.json();
         //console.log('API Response - Entire Database:', articlesCollectionData);
 
         let foundItemItemuid;
@@ -1414,7 +1495,7 @@ async function webflowCollection(pageIdToPublish) {
         let htmlbodycode;
 
         // Check if 'items' property exists in the API response
-            if (articlesCollectionData.hasOwnProperty('items') && Array.isArray(articlesCollectionData.items)) {
+            if (webflowArticlesCollectionData.hasOwnProperty('items') && Array.isArray(webflowArticlesCollectionData.items)) {
                 itemUidToFind = articlesParseData["itemuid"];
                 itemNameToFind = articlesParseData["name"];
                 itemSectionNameToFind = articlesParseData["sectionname"];
@@ -1423,41 +1504,17 @@ async function webflowCollection(pageIdToPublish) {
                 foundItemName = "None";
                 foundItemItemuid = "None";
 
-                console.log("LOOP: if (articlesCollectionData.hasOwnProperty('items')");
                 console.log("")
-                console.log('   itemIdToFind:', itemUidToFind);
-                console.log("--------------------------------------------------------")
+                console.log("LOOP: if (webflowArticlesCollectionData.hasOwnProperty('items')");
+                console.log("--------------------------------------------------------");
+                console.log('   Looking for:                ',itemNameToFind,' : DEFINED LATER');
+                console.log('   Found article:              ',foundItemName,' : ',itemUidToFind);
+                console.log('   Priming creation/update array');
+                console.log("--------------------------------------------------------");
 
-                console.log('   itemNameToFind:', itemNameToFind);
-                console.log("--------------------------------------------------------")
-
-                console.log('   itemSectionNameToFind:', itemSectionNameToFind);
-                console.log("--------------------------------------------------------")
-                
-                console.log('   articleCollectionItemId:', articleCollectionItemId);
-                console.log("--------------------------------------------------------")
-                console.log("--------------------------------------------------------")
-                console.log("")
-
-                if (articlesCollectionData.items.length != 0) {
+                if (webflowArticlesCollectionData.items.length != 0) {
  
-                    for (const item of articlesCollectionData.items) {
-
-                        console.log("LOOP: for (const item of articlesCollectionData.items)");
-                        console.log("")
-                        console.log("   itemuid",item.fieldData.itemuid);
-                        console.log("--------------------------------------------------------")
-
-                        console.log('   foundItemItemuid:', itemUidToFind);
-                        console.log("--------------------------------------------------------")
-                        
-                        console.log('   item.fieldData.name:', item.fieldData.name);
-                        console.log("--------------------------------------------------------")
-
-                        console.log('   itemNameToFind:', itemNameToFind);
-                        console.log("--------------------------------------------------------")
-                        console.log("--------------------------------------------------------")
-                        console.log("")
+                    for (const item of webflowArticlesCollectionData.items) {
 
                         if (item.fieldData.name === itemNameToFind && item.fieldData.itemuid === itemUidToFind) {
                             
@@ -1465,70 +1522,38 @@ async function webflowCollection(pageIdToPublish) {
                             foundItemItemuid = item.fieldData.itemuid;
                             foundItemName = item.fieldData.name;
 
+                            console.log("")
                             console.log("LOOP: if (item.fieldData.name === itemNameToFind)");
-                            console.log("")
-                            console.log("   itemuid",item.fieldData.itemuid);
+                            console.log("--------------------------------------------------------")
+                            console.log('   Looking for:                ',itemNameToFind,' : ',item.fieldData.itemuid);
+                            console.log('   Found article:              ',foundItemName,' : ',itemUidToFind);
+                            console.log('   Updating it.');
                             console.log("--------------------------------------------------------")
 
-                            console.log('   foundItemItemuid:', itemUidToFind);
-                            console.log("--------------------------------------------------------")
-
-                            console.log('   item.fieldData.name:', item.fieldData.name);
-                            console.log("--------------------------------------------------------")
-    
-                            console.log('   itemNameToFind:', itemNameToFind);
-                            console.log("--------------------------------------------------------")
-
-                            console.log('   articleCollectionItemId:', articleCollectionItemId);
-                            console.log("--------------------------------------------------------")
-
-                            console.log('   Found the matching article:',foundItemName,'in CMS and will update it.');
-                            console.log("--------------------------------------------------------")
-                            
-                            console.log("--------------------------------------------------------")
-                            console.log("")
                             //console.log('Found item with name', itemNameToFind, 'and id', item.id);
                             // You can use item.id or perform any other action with the found item here
                             break; // If you only want to find the first matching item and exit the loop
-                        }
-
-                        // if (item.fieldData.itemuid === itemUidToFind) {
-
-                        //     foundItemItemName = item.fieldData.name;
-                        //     // You found the item's item_id, you can proceed with update or use itemId as needed
-                        //     console.log('   Found the matching article:',foundItemItemName,'in CMS and will update it.');
-                        //     console.log("--------------------------------------------------------")
-                        //     break; // Exit the loop since you found the item
                         
-                        // }
-                        if (item.fieldData.itemuid != itemUidToFind) {
+                        } else {
 
-                            console.log('   Notion article "',itemNameToFind,'" has not been created in CMS. Creating it now.');
-                            console.log("--------------------------------------------------------")
+                            console.log("");
+                            console.log("LOOP: if (item.fieldData.name != itemNameToFind)");
+                            console.log("--------------------------------------------------------");
+                            console.log('   Looking for:                ',itemNameToFind,' : ',item.fieldData.itemuid);
+                            console.log('   Found article:               NONE FOUND');
+                            console.log('   Creating it.');
+                            console.log("--------------------------------------------------------");
                             break; // Exit the loop since you didn't find the item
+
                         }
                     }
+
                 } else {
 
                     console.log("LOOP: else");
                     console.log("")
-                    console.log('   Notion database is empty. Creating first entry.');
+                    console.log('Notion database is empty. Creating first entry.');
                     console.log("--------------------------------------------------------")
-
-                    console.log("   articleCollectionItemId:",articleCollectionItemId);
-                    console.log("--------------------------------------------------------")
-                    
-                    console.log("   itemUidToFind:",itemUidToFind);
-                    console.log("--------------------------------------------------------")
-                    
-                    //console.log('itemIdToFind:', itemIdToFind);
-                    console.log('   foundItemItemName:', foundItemName);
-                    console.log("--------------------------------------------------------")
-
-                    console.log('   itemNameToFind:', itemNameToFind);
-                    console.log("--------------------------------------------------------")
-                    console.log("--------------------------------------------------------")
-                    console.log("")
                 }
         
         } else {
@@ -1538,6 +1563,7 @@ async function webflowCollection(pageIdToPublish) {
         //console.log('itemuid:', itemuid);
 
         //console.log("attributeData",attributeData);
+
         const ARTICLES_DATA_CREATE = {
             isArchived: false,
             isDraft: false,
@@ -1563,205 +1589,269 @@ async function webflowCollection(pageIdToPublish) {
             }
         };
 
-        
+        const FINAL_ARTICLES_DATA = foundItemItemuid === "None" ? ARTICLES_DATA_CREATE : ARTICLES_DATA_UPDATE;
 
+        const finalArticlesOptions = {
+            method: foundItemItemuid === "None" ? 'POST' : 'PATCH', // Use PATCH for update and POST for create
+            headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            authorization: `Bearer ${API_KEY}`,
+            },
+            body: JSON.stringify(FINAL_ARTICLES_DATA),
+        };
+
+        const API_ENDPOINT_FINAL_ARTICLES = foundItemItemuid === "None" ? API_ENDPOINT_ARTICLES : `${API_ENDPOINT_ARTICLES}/${articleCollectionItemId}`;        
+
+        console.log(`   Article "${foundItemName}" with UID of ${foundItemItemuid} being processed.`)
+        console.log("--------------------------------------------------------")
         //itemCollectionId = finalQueryResponseJson.id
         //console.log("itemCollectionId",itemCollectionId);
 
 
-////////////// UPDATE SUBSECTIONS IN SUBSECTION COLLECION IN WEBFLOW ///////////////////////////
+////////////// QUERY TOC COLLECTION AND PREP FOR CREATE ITEM OR UPDATE ITEM ///////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         //query subsection cms
         //match item name to section name
         //for each subsection in sectionArray, update subsectionitem${!} values if match
-        let subsectionCollectionItemID;
         // Define options for the fetch request to query the collection
-        const subsectionsQueryOptions = {
+        const tableofcontentsQueryOptions = {
             method: 'GET',
             headers: {
-            accept: 'application/json',
-            authorization: `Bearer ${API_KEY}`,
+                accept: 'application/json',
+                authorization: `Bearer ${API_KEY}`,
             },
         };
-        const subsectionsQueryResponse = await fetch(API_ENDPOINT_SUBSECTIONS, subsectionsQueryOptions)
-       
-        let subsectionsCollectionData;
+            
+        let tableofcontentsCollectionData;
         let itemFieldDataName;
-        let SUBSECTION_UPDATE_DATA = {};
-        let ARTICLE_UPDATE2_DATA = {};
+        let TABLEOFCONTENTS_CREATE_DATA = {};
+        let TABLEOFCONTENTS_UPDATE_DATA = {};
         let subsectionsFromSectionDataArray;
-        let subsectionCollectionItemId;
+        let tableofcontentsCollectionItemId;
+        let finalTableOfContentsOptions;
+        //let existingItem;
+        let FINAL_TABLEOFCONTENTS_DATA;
+        // Function to create a collection item
 
-        try {
-            if (!subsectionsQueryResponse.ok) {
-                throw new Error(`Error fetching subsections data: ${subsectionsQueryResponse.statusText}`);
-            }
-        
-            subsectionsCollectionData = await subsectionsQueryResponse.json();
-            // Ensure subsectionsCollectionData is an object with an 'items' property
+        // Ensure tableofcontentsCollectionData is an object with an 'items' property
+        for (const sectionName in sectionData) {
+            if (sectionData.hasOwnProperty(sectionName)) {
 
-            for(const sectionX in sectionData){
+                    const subsections = sectionData[sectionName].subsections;
+                    const subArticles = [];
+    
+                    // Iterate through subsections
+                    for (let i = 1; i <= subsections.length; i++) {
+                        const subsectionName = subsections[i - 1];
                 
-                if (sectionData.hasOwnProperty(sectionX)) {
-
-                    subsectionsFromSectionDataArray = getSubsectionsBySectionName(sectionData, sectionX);
-
-                    //let collectionItemName = item.fieldData.name;
-                    for (const item of subsectionsCollectionData.items) {
-                        if(item.fieldData.name === sectionX && sectionX === itemSectionNameToFind){
-                            itemFieldDataName = item.fieldData.name;
-                            subsectionCollectionItemId = item.id;
-
-                            console.log("   itemSectionNameToFind", itemSectionNameToFind);
-                            console.log("   sectionX", sectionX);
-                            console.log("   itemFieldDataName", itemFieldDataName);
-                            console.log("   subsectionCollectionItemId", subsectionCollectionItemId);
-                            console.log("--------------------------------------------------------")
-                            console.log("")
-
-
-                        }
+                        // Find corresponding articles based on sectionName and subsectionNameprime
+                        const matchingArticles = webflowArticlesCollectionData.items
+                            .filter(article =>
+                                article.fieldData.sectionname === sectionName &&
+                                article.fieldData.subsectionnameprime === subsectionName
+                            )
+                            .map(article => article.id);
+                
+                        // Push the matching articles to the subArticles array
+                        subArticles.push(matchingArticles);
+                
+                        // Update the sectionData with subX-articles
+                        sectionData[sectionName][`sub${i}-articles`] = matchingArticles;
                     }
-                    
-                    //console.log("sectionX", sectionX);                    
-                    if(itemFieldDataName === sectionX){
-                        
-                        SUBSECTION_UPDATE_DATA = {
-                            isArchived: false,
-                            isDraft: false,
-                            fieldData: {
-                                name: sectionX,
-                            }
-                        }
-
-                        ARTICLE_UPDATE2_DATA = {
-                            isArchived: false,
-                            isDraft: false,
-                            fieldData: {
-                                name: itemNameToFind,
-                            }
-                        };
-                        //console.log("itemSectionName", itemName);
-                        //console.log("sectionX", sectionX);
-                        const subsectionsFromSectionDataArray = sectionData[sectionX].subsections;
-
-                        //console.log("subsectionsFromSectionDataArray", subsectionsFromSectionDataArray);
-                        for (let i = 1; i <= 6; i++){
-                            const subsectionKey = `subsectionitem${i}`;
-                            SUBSECTION_UPDATE_DATA.fieldData[subsectionKey] = 'None';
-                            ARTICLES_DATA_CREATE.fieldData[subsectionKey] = 'None';
-                            ARTICLES_DATA_UPDATE.fieldData[subsectionKey] = 'None';
-
-                        }
-
-                        // Update the item's subsection properties
-                        for (let i = 1; i <= subsectionsFromSectionDataArray.length; i++) {
-                            const subsectionName = subsectionsFromSectionDataArray[i - 1];
-                            const subsectionKey = `subsectionitem${i}`;
-                            
-                            SUBSECTION_UPDATE_DATA.fieldData[subsectionKey] = subsectionName;
-                            ARTICLES_DATA_CREATE.fieldData[subsectionKey] = subsectionName;
-                            ARTICLES_DATA_UPDATE.fieldData[subsectionKey] = subsectionName;
-
-                        }
-
-                        //console.log('After updating:');
-                        //console.log(SUBSECTION_UPDATE_DATA);
-                    }
-                }
-            }
-
-            //console.log("SUBSECTION_UPDATE_DATA",SUBSECTION_UPDATE_DATA);
-
-            const updateSubsectionCollectionOptions = {
-                method: 'PATCH',
-                headers: {
-                    accept: 'application/json',
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${API_KEY}`,
-                },
-                body: JSON.stringify(SUBSECTION_UPDATE_DATA),
-            };
-
-            const updateArticleCollectionOptions = {
-                method: 'PATCH',
-                headers: {
-                    accept: 'application/json',
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${API_KEY}`,
-                },
-                body: JSON.stringify(ARTICLE_UPDATE2_DATA),
-            };
         
-            // Define the final API endpoint based on whether the item exists
-            const API_ENDPOINT_SUBSECTION_UPDATE = `${API_ENDPOINT_SUBSECTIONS}/${subsectionCollectionItemId}`;
-            const API_ENDPOINT_ARTICLE_UPDATE = `${API_ENDPOINT_ARTICLES}/${articleCollectionItemId}`;
+                // Filter article IDs based on sectionName
+                const articleIDs = webflowArticlesCollectionData.items
+                    .filter(article => article.fieldData.sectionname === sectionName)
+                    .map(article => article.id);
 
-            // Make the API request
-            let subsectionsUpdateResponseJson;
-            let articlesUpdateResponseJson;
+                    //console.log(`articleID count for ${sectionName} is`,articleIDs.length);
+                    //console.log(`subsections count for ${sectionName} is`,subsections.length);
 
-            try {
+                createCollectionItem(sectionName, subsections, articleIDs);
+            }
+        }
+        //console.log("sectionData",sectionData);
+        //console.log("articlesCollectionData.items", articlesCollectionData.items.map(item => item.fieldData.sectionname));
+        //console.log("articlesCollectionData.length", articlesCollectionData.items.length);
 
-                //console.log("updateSubsectionCollectionOptions",updateSubsectionCollectionOptions);
-                const subsectionsUpdateResponse = await fetch(API_ENDPOINT_SUBSECTION_UPDATE, updateSubsectionCollectionOptions);
-                subsectionsUpdateResponseJson = await subsectionsUpdateResponse.json();
-                //console.log("subsectionsUpdateResponseJson",subsectionsUpdateResponseJson);
 
-                if (!subsectionsUpdateResponse.ok) {
-                    throw new Error(`HTTP error! Status: ${subsectionsUpdateResponse.status}`);
+        async function doesItemExist(sectionName, name) {
+            try{
+                const tableofcontentsExistResponse = await fetch(API_ENDPOINT_TABLEOFCONTENTS, tableofcontentsQueryOptions);
+                const tableofcontentsExistJson = await tableofcontentsExistResponse.json();
+
+                //console.log("sectionName",sectionName);
+                //console.log("tableofcontentsExistJson.name", tableofcontentsExistJson.items.map(item => item.fieldData.name));
+                //console.log("tableofcontentsExistJson.sectionname",tableofcontentsExistJson.items.map(item => item.fieldData.sectionname));
+
+                if (tableofcontentsExistResponse.ok) {
+                    // Check if an item with the given sectionName exists
+                    const existingItem = tableofcontentsExistJson.items.find(item => item.fieldData.name === sectionName);
+        
+                    if (existingItem) {
+                        // Return the ID of the existing item
+                        return existingItem.id;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    console.error(`Error checking if item exists: ${sectionName}`);
+                    console.error(tableofcontentsExistResponse.statusText);
+                    return false;
                 }
-                else if(subsectionsUpdateResponse.ok) {
-                    
-                    console.log(`   Section "${itemSectionNameToFind}" with ID of ${subsectionCollectionItemId}`)
-                    console.log("--------------------------------------------------------")
-
-                    console.log(`   Subsection API Response Status: ${subsectionsUpdateResponse.status}`);
-                    console.log("--------------------------------------------------------")
-
-                    //console.log("subsectionsUpdateResponseJson",subsectionsUpdateResponseJson);
-                }
-                            
             } catch (error) {
-                console.error('Error:', error);
+                console.error(`Error checking if item exists: ${sectionName}`);
+                console.error(error);
+                return false;
             }
+        }
 
-            console.log(`   Item "${foundItemName}" with UID of ${foundItemItemuid} being processed.`)
-            console.log("--------------------------------------------------------")
-            const FINAL_DATA = foundItemItemuid === "None" ? ARTICLES_DATA_CREATE : ARTICLES_DATA_UPDATE;
-        
-            // for (const key in articlesParseData) {
-            //     if (key.startsWith('subsectionitem')) {
-            //         FINAL_DATA.fieldData[key] = articlesParseData[key];
-            //     }
-            // }
-            const finalOptions = {
-                method: foundItemItemuid === "None" ? 'POST' : 'PATCH', // Use PATCH for update and POST for create
-                headers: {
-                accept: 'application/json',
-                'content-type': 'application/json',
-                authorization: `Bearer ${API_KEY}`,
-                },
-                body: JSON.stringify(FINAL_DATA),
-            };
-        
-            // Define the final API endpoint based on whether the item exists
-            // If the item exists, use the item_id for update // If the item doesn't exist, create a new one
-            const articlesFinalAPIEndpoint = foundItemItemuid === "None" ? API_ENDPOINT_ARTICLES : `${API_ENDPOINT_ARTICLES}/${articleCollectionItemId}`;
+        async function createCollectionItem(sectionName, subsections, articleIDs) {
 
-            //console.log("articlesFinalAPIEndpoint", articlesFinalAPIEndpoint);
-            //console.log("articleCollectionItemId", articleCollectionItemId);
-            //console.log("finalOptions", finalOptions);
-            // Make the API request
-            let finalQueryResponseJson;
+                const slug = sectionName.replace(/ /g, '-').toLowerCase();
+                
+                const TABLEOFCONTENTS_UPDATE_DATA = {
+                    isArchived: false,
+                    isDraft: false,
+                    fieldData: {
+                        name: sectionName,
+                        slug: slug,
+                        section1: sectionName,
+                    },
+                };
+            
+                const TABLEOFCONTENTS_CREATE_DATA = {
+                    isArchived: false,
+                    isDraft: false,
+                    fieldData: {
+                        name: sectionName,
+                        slug: slug,
+                        section1: sectionName,
+                    },
+                };
+
+                const existingItemId = await doesItemExist(sectionName);
+
+                if (existingItemId) {
+                    // Item already exists, update it
+                    FINAL_TABLEOFCONTENTS_DATA = TABLEOFCONTENTS_UPDATE_DATA;
+                    tableofcontentsCollectionItemId = existingItemId; // Store the existing item's ID
+                    console.log(`Item already exists for section: ${sectionName}. Updating it.`);
+                } else {
+                    // Item doesn't exist, create a new one
+                    FINAL_TABLEOFCONTENTS_DATA = TABLEOFCONTENTS_CREATE_DATA;
+                    console.log(`Item doesn't exist for section: ${sectionName}. Creating it.`);
+                }
+
+                //console.log(`articleID count for ${sectionName} is`,articleIDs.length);
+                //console.log(`subsections count for ${sectionName} is`,subsections.length);
+
+                for (let i = 0; i < subsections.length; i++) {
+                    const subField = `subsection${i + 1}`;
+                    FINAL_TABLEOFCONTENTS_DATA.fieldData[subField] = subsections[i];
+                  
+                    // Initialize an array to store article IDs for the current subsection
+                    const subArticleIDs = [];
+                  
+                    for (let j = 0; j < articleIDs.length; j++) {
+                      const articleID = articleIDs[j];
+                      
+                      // Find the article by ID
+                      const article = webflowArticlesCollectionData.items.find(article => article.id === articleID);
+                  
+                      if (article && article.fieldData.sectionname === sectionName && article.fieldData.subsectionnameprime === subsections[i]) {
+                        // If the article belongs to the current section and subsection, add its ID
+                        subArticleIDs.push(articleID);
+                      }
+                    }
+                  
+                    // Set the subX-articles field for the current subsection
+                    const subArticlesField = `sub${i + 1}-articles`;
+                    FINAL_TABLEOFCONTENTS_DATA.fieldData[subArticlesField] = subArticleIDs.length > 0 ? subArticleIDs : '';
+                  }
+
+                  // If there are no subsections, add articles that match sectionName directly
+                if (subsections.length === 0) {
+                    // Initialize an array to store article IDs for the section
+                    const sectionArticleIDs = [];
+
+                    for (let j = 0; j < articleIDs.length; j++) {
+                    const articleID = articleIDs[j];
+                    
+                    // Find the article by ID
+                    const article = webflowArticlesCollectionData.items.find(article => article.id === articleID);
+
+                    if (article && article.fieldData.sectionname === sectionName) {
+                        // If the article belongs to the current section, add its ID
+                        sectionArticleIDs.push(articleID);
+                    }
+                    }
+
+                    console.log("sectionArticleIDs",sectionArticleIDs);
+                    // Set the sub1-articles field for the section
+                    FINAL_TABLEOFCONTENTS_DATA.fieldData['sub1-articles'] = sectionArticleIDs.length > 0 ? sectionArticleIDs : '';
+                }
+
+
+                //FINAL_TABLEOFCONTENTS_DATA.fieldData['sub-articles'] = articleIDs;
+
+                //const method = existingItemId ? 'PATCH' : 'POST';
+
+                const API_ENDPOINT_FINAL_TABLEOFCONTENTS = existingItemId ? `${API_ENDPOINT_TABLEOFCONTENTS}/${tableofcontentsCollectionItemId}` : API_ENDPOINT_TABLEOFCONTENTS;
+
+                finalTableOfContentsOptions = {
+                    method: existingItemId ? 'PATCH' : 'POST',
+                    headers: {
+                        accept: 'application/json',
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${API_KEY}`,
+                    },
+                    body: JSON.stringify(FINAL_TABLEOFCONTENTS_DATA),
+                };
+
+                //console.log("FINAL_TABLEOFCONTENTS_DATA",FINAL_TABLEOFCONTENTS_DATA);
+                //console.log(`finalTableOfContentsOptions for ${sectionName}`,finalTableOfContentsOptions);
+                //console.log("API_ENDPOINT_FINAL_TABLEOFCONTENTS",API_ENDPOINT_FINAL_TABLEOFCONTENTS);
+
+                try {
+                    const tableofcontentsQueryResponse = await fetch(API_ENDPOINT_FINAL_TABLEOFCONTENTS, finalTableOfContentsOptions);
+
+                    //console.log(`tableofcontentsQueryResponse for ${sectionName},${tableofcontentsQueryResponse}`);
+
+                    if (tableofcontentsQueryResponse.ok) {
+                        const tableofcontentsQueryResponseJson = await tableofcontentsQueryResponse.json();
+                        console.log(`Created collection item for section: ${sectionName}`);
+                        //console.log(tableofcontentsQueryResponseJson);
+                    } else {
+                        console.error(`Error creating collection item for section: ${sectionName}`);
+                        //console.log(tableofcontentsQueryResponse);
+                        console.error(tableofcontentsQueryResponse.statusText);
+                    }
+                } catch (error) {
+                    console.error(`Error creating collection item for section: ${sectionName}`);
+                    console.error(error);
+                }
+            
+            }
+                      
+
+////////////// CREATE OR UPDATE THE ARTICLES AND TOC COLLECITONS ///////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+            // Write ARTICLE
+            let finalArticlesQueryResponseJson;
+
             try {
-                const finalQueryResponse = await fetch(articlesFinalAPIEndpoint, finalOptions);
-                finalQueryResponseJson = await finalQueryResponse.json();
+                const finalArticlesQueryResponse = await fetch(API_ENDPOINT_FINAL_ARTICLES, finalArticlesOptions);
+                finalArticlesQueryResponseJson = await finalArticlesQueryResponse.json();
                 //console.log("finalQueryResponseJson", finalQueryResponseJson);
 
-                if (finalOptions.method === 'POST') {
+                if (finalArticlesOptions.method === 'POST') {
                     // If the HTTP method was POST, it means a new item was created
                     //console.log('New item created:', finalQueryResponseJson.substring(0, 500) + '...');
                     console.log('   New item created:', itemNameToFind);
@@ -1769,7 +1859,7 @@ async function webflowCollection(pageIdToPublish) {
 
                 }
                 
-                if (finalOptions.method === 'PATCH') {
+                if (finalArticlesOptions.method === 'PATCH') {
                     // If the HTTP method was PUT, it means an existing item was updated
                     //console.log('Item updated:', finalQueryResponseJson.substring(0, 500) + '...');
                     console.log('   Item updated:', itemNameToFind);
@@ -1777,77 +1867,28 @@ async function webflowCollection(pageIdToPublish) {
 
                 }
 
-                if (!finalQueryResponse.ok) {
-                    throw new Error(`HTTP error! Status: ${finalQueryResponse.status}`);
+                if (!finalArticlesQueryResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${finalArticlesQueryResponse.status}`);
                 }
-                else if(finalQueryResponse.ok) {
-                    console.log(`   Article API Response Status: ${finalQueryResponse.status}`);
-                    console.log("--------------------------------------------------------")
+                else if(finalArticlesQueryResponse.ok) {
+                    //console.log(`   Article API Response Status: ${finalArticlesQueryResponse.status}`);
+                    //console.log("--------------------------------------------------------")
                 }
             
 
             } catch (error) {
-
-                console.error('Error:', error);
-
+                console.error('Error fetching/parsing subsections data:', error);
+                // Handle the error as needed.
             }
-
-            // try {
-
-            //     //console.log("updateArticleCollectionOptions",updateArticleCollectionOptions);
-            //     //console.log("API_ENDPOINT_ARTICLE_UPDATE",API_ENDPOINT_ARTICLE_UPDATE);
-            //     const articlesUpdateResponse = await fetch(API_ENDPOINT_ARTICLE_UPDATE, updateArticleCollectionOptions);
-            //     articlesUpdateResponseJson = await articlesUpdateResponse.json();
-            //     console.log("articlesUpdateResponse",articlesUpdateResponse);
-            //     console.log("articlesUpdateResponseJson",articlesUpdateResponseJson);
-
-            //     if (!articlesUpdateResponse.ok) {
-            //         //console.log("articlesUpdateResponseJson",articlesUpdateResponseJson);
-            //         throw new Error(`HTTP error! Status: ${articlesUpdateResponse.status}`);
-            //     }
-            //     else if(articlesUpdateResponse.ok) {
-                    
-            //         console.log(`   Section "${itemNameToFind}" with ID of ${articleCollectionItemId}`)
-            //         console.log("--------------------------------------------------------")
-
-            //         console.log(`   Subsection API Response Status: ${articlesUpdateResponse.status}`);
-            //         console.log("--------------------------------------------------------")
-
-            //     }
-                            
-            // } catch (error) {
-            //     console.error('Error:', error);
-            // }
-
-
+                
+        
         } catch (error) {
             console.error('Error fetching/parsing subsections data:', error);
             // Handle the error as needed.
         }
-
-        //console.log("sectionData",sectionData);
-        function getSubsectionsBySectionName(sectionData, targetSectionName) {
-            if (sectionData.hasOwnProperty(targetSectionName)) {
-
-                const section = sectionData[targetSectionName];
-
-                if (section.subsections && section.subsections.length > 0) {
-                    return section.subsections;
-                } else {
-                    return "No subsections found for the section.";
-                }
-
-            } else {
-                return "Section not found in sectionData.";
-            }
-        }
-        //const subsections = getSubsectionsBySectionName(sectionData, XsectionName)
-
-
-    } catch (error) {
-        console.error('Error:', error);
-    }
 }
+    
+
 //webflowCollection(pageIdToPublishLOCAL);
 
   
