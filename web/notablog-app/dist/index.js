@@ -892,7 +892,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const { concurrency, verbose, ignoreCache } = opts;
     //const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: 'v02%3Auser_token_or_cookies%3AZwQSLj3zP6UG9SShH7mjqS6OhxNUK8Z2bgboaaXhUxnn8xhYrrq_H1juG_hvvgGtNAw9_tYGIju95zzJsrnNeEq2ERvEZOjyC4eiatLSmpCbjuXIrjBTD9ha-pQWLCL3EbIK' });
     //const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: 'v02%3Auser_token_or_cookies%3AGXYK1MbgiAkyh6B8BaFtoySOWF_RD3NzlmrNqx_eV2-fZLrmRsuGLRAR1tKkHpyGlbPLhEB4Xu5IuGQZI0-dR7fHNJW9mqD7JVCcBLO-yAppY0ie_1SLtQZXGDGZU22SZeMv' });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
-    const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: process.env.REACT_APP_NOTION_API_KEY });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
+    const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: process.env.NOTION_API_KEY });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
     const config = new Config(path__default['default'].join(workDir, 'config.json'));
     /** Init dir paths. */
     const theme = config.get('theme');
@@ -1058,7 +1058,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const regexRootBlock = /(<style>([\s\S]*)<\/style>)/g;
     const regexNavAndHeader = /(  <!-- <nav([\s\S]*)<\/header>)/g;
 
-    const notion = new Client({auth: process.env.REACT_APP_NOTION_SECRET});
+    const notion = new Client({auth: process.env.NOTION_SECRET});
 
     let replaceCount = 0;
     let matchCount = 0;
@@ -1221,7 +1221,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
     try {
 
         const sections = {};
-        const notionDatabaseId = process.env.REACT_APP_NOTION_DATABASE_ID;
+        const notionDatabaseId = process.env.NOTION_DATABASE_ID;
         const notionPageApiUrl = `https://api.notion.com/v1/pages/${pageIdToPublish}`;
         const notionDatabaseApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
 
@@ -1233,7 +1233,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
               accept: 'application/json',
               'Notion-Version': '2022-06-28',
               'content-type': 'application/json',
-              Authorization: `Bearer ${process.env.REACT_APP_NOTION_API_AXIOS_TOKEN}`,
+              Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
             },
         };
 
@@ -1285,7 +1285,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
             accept: 'application/json',
             'Notion-Version': '2022-06-28',
             'content-type': 'application/json',
-            Authorization: `Bearer ${process.env.REACT_APP_NOTION_API_AXIOS_TOKEN}`,
+            Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
             },
             body: JSON.stringify({page_size: 100}),
         };
@@ -1404,8 +1404,8 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
 
 async function collectionDatabaseCheck(){
 
-    const API_KEY = process.env.REACT_APP_WEBFLOW_API;
-    const ARTICLES_COLLECTION_ID = process.env.REACT_APP_ARTICLES_COLLECTION_ID;
+    const API_KEY = process.env.WEBFLOW_API;
+    const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID;
     const API_ENDPOINT_ARTICLES = `https://api.webflow.com/beta/collections/${ARTICLES_COLLECTION_ID}/items`;
 
     const articlesQueryOptions = {
@@ -1427,11 +1427,11 @@ async function collectionDatabaseCheck(){
             accept: 'application/json',
             'Notion-Version': '2022-06-28',
             'content-type': 'application/json',
-            Authorization: `Bearer ${process.env.REACT_APP_NOTION_API_AXIOS_TOKEN}`,
+            Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
         },
         body: JSON.stringify({page_size: 100}),
     };
-    const notionDatabaseId = process.env.REACT_APP_NOTION_DATABASE_ID;
+    const notionDatabaseId = process.env.NOTION_DATABASE_ID;
     const notionDatabaseApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
     const notionDatabaseQueryResponse = await fetch(notionDatabaseApiUrl, databaseQueryOptions);
     let notionDatabaseQueryResponseData = await notionDatabaseQueryResponse.json();
@@ -1495,11 +1495,11 @@ async function webflowCollection(pageIdToPublish) {
         //articlesParseData = JSON.parse(customAttributesJSON); // Parse JSON
         //console.log(parsedData);
 
-        const API_KEY = process.env.REACT_APP_WEBFLOW_API;
-        const ARTICLES_COLLECTION_ID = process.env.REACT_APP_ARTICLES_COLLECTION_ID;
-        const SECTIONS_COLLECTION_ID = process.env.REACT_APP_SECTIONS_COLLECTION_ID;
-        const SUBSECTIONS_COLLECTION_ID = process.env.REACT_APP_SUBSECTIONS_COLLECTION_ID;
-        const TABLEOFCONTENTS_COLLECTION_ID = process.env.REACT_APP_TABLEOFCONTENTS_COLLECTION_ID;
+        const API_KEY = process.env.WEBFLOW_API;
+        const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID;
+        const SECTIONS_COLLECTION_ID = process.env.SECTIONS_COLLECTION_ID;
+        const SUBSECTIONS_COLLECTION_ID = process.env.SUBSECTIONS_COLLECTION_ID;
+        const TABLEOFCONTENTS_COLLECTION_ID = process.env.TABLEOFCONTENTS_COLLECTION_ID;
         const API_ENDPOINT_ARTICLES = `https://api.webflow.com/beta/collections/${ARTICLES_COLLECTION_ID}/items`;
         const API_ENDPOINT_SECTIONS = `https://api.webflow.com/beta/collections/${SECTIONS_COLLECTION_ID}/items`;
         const API_ENDPOINT_SUBSECTIONS = `https://api.webflow.com/beta/collections/${SUBSECTIONS_COLLECTION_ID}/items`;
