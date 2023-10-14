@@ -25,10 +25,6 @@ const ReactDOMServer = require ('react-dom/server');
 //const MyContext = require('../../../web/context');
 const cloudinary = require('cloudinary').v2;
 const request = require('request');
-const probe = require("probe-image-size");
-const { PDFDocument, rgb } = require('pdf-lib');
-const { htmlToImage } = require('html-to-image');
-const puppeteer = require('puppeteer');
 const axios = require('axios'); 
 const fetch = require('node-fetch');
 
@@ -896,7 +892,7 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const { concurrency, verbose, ignoreCache } = opts;
     //const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: 'v02%3Auser_token_or_cookies%3AZwQSLj3zP6UG9SShH7mjqS6OhxNUK8Z2bgboaaXhUxnn8xhYrrq_H1juG_hvvgGtNAw9_tYGIju95zzJsrnNeEq2ERvEZOjyC4eiatLSmpCbjuXIrjBTD9ha-pQWLCL3EbIK' });
     //const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: 'v02%3Auser_token_or_cookies%3AGXYK1MbgiAkyh6B8BaFtoySOWF_RD3NzlmrNqx_eV2-fZLrmRsuGLRAR1tKkHpyGlbPLhEB4Xu5IuGQZI0-dR7fHNJW9mqD7JVCcBLO-yAppY0ie_1SLtQZXGDGZU22SZeMv' });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
-    const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: process.env.NOTION_API_KEY });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
+    const notionAgent = notionapiAgent.createAgent({ debug: verbose, token: process.env.REACT_APP_NOTION_API_KEY });    const cache = new Cache(path__default['default'].join(workDir, 'cache'));
     const config = new Config(path__default['default'].join(workDir, 'config.json'));
     /** Init dir paths. */
     const theme = config.get('theme');
@@ -1032,11 +1028,20 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     //const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g;
     //const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
     
+    const sourceSansProStyleSheet = '<link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@63f1aa74b4fa812b340bd0bfd2e6913b8bdf9c36/SourceSansPro.css"></link>';
+    const themeStyleSheet = '<link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@63f1aa74b4fa812b340bd0bfd2e6913b8bdf9c36/theme.css"></link>';
+    const notablogStyleSheet = '<link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@main/notablog.css"></link>';
+
     let matchRegexBlockID;
     let matchregexHtmlHref;
     let matchRegexPageID;
     let matchRegexHtmlUrl;
     let matchregexDragonman;
+    let matchsourceSansProStyleSheet;
+    let matchthemeStyleSheet;
+    let matchnotablogStyleSheet;
+    let matchRootBlock;
+    let matchNavAndHeader;
     let blockId;
     let block;
     let imageIdFull;
@@ -1047,10 +1052,18 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12}$/g;
     const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
     const regexDragonman = /(<div>Powered by*)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(dragonman225)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(<\/div>)/g;
-    
-    const notion = new Client({auth: process.env.NOTION_SECRET});
+    const regexsourceSansProStyleSheet = /(<link rel="stylesheet" type="text\/css" href="css\/SourceSansPro.css">)/g;
+    const regexthemeStyleSheet = /(<link rel="stylesheet" type="text\/css" href="css\/theme.css">)/g;
+    const regexnotablogStyleSheet = /(<link rel="stylesheet" type="text\/css" href="css\/notablog.css">)/g;
+    const regexRootBlock = /(<style>([\s\S]*)<\/style>)/g;
+    const regexNavAndHeader = /(  <!-- <nav([\s\S]*)<\/header>)/g;
 
-    //console.log("returnValuePost",returnValuePost);
+    const notion = new Client({auth: process.env.REACT_APP_NOTION_SECRET});
+
+    let replaceCount = 0;
+    let matchCount = 0;
+
+    //console.log("original html",returnValuePost);
     async function processHtml() {
 
         function isValidUUID(uuid) {
@@ -1059,11 +1072,17 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
         }
 
         try {
-            let newHtml = returnValuePost;
+            let finsweet = "<!-- fs-richtext-ignore -->"
+            let newHtml = finsweet+returnValuePost;
 
                 matchregexDragonman = returnValuePost.match(regexDragonman);
                 //console.log("newHtml",newHtml);
-
+                matchsourceSansProStyleSheet = returnValuePost.match(regexsourceSansProStyleSheet);
+                matchthemeStyleSheet = returnValuePost.match(regexthemeStyleSheet);
+                matchnotablogStyleSheet = returnValuePost.match(regexnotablogStyleSheet);
+                matchRootBlock = returnValuePost.match(regexRootBlock);
+                matchNavAndHeader = returnValuePost.match(regexNavAndHeader);
+                
             while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
 
                 //console.log("returnValuePost",returnValuePost);
@@ -1074,6 +1093,11 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
                 const decodeModule = await import('decode-uri-component');
                 const imageHref = decodeModule.default(matchregexHtmlHref[0]);
                 const imageUID = matchRegexBlockID;
+
+                if (matchRegexHtmlUrl) {
+                    // Increment the match count
+                    matchCount++;
+                }
 
                 if (!isValidUUID(imageUID)) {
                     // Handle the case where imageUID is not a valid UUID
@@ -1093,8 +1117,22 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
                 //console.log("matchRegexHtmlUrl[0]",matchRegexHtmlUrl[0]);
 
                 newHtml = newHtml.replace(matchRegexHtmlUrl[0],cloudinaryURL);
+                replaceCount++;
                 newHtml = newHtml.replace(matchregexDragonman,'');
+                newHtml = newHtml.replace(matchsourceSansProStyleSheet,sourceSansProStyleSheet);
+                newHtml = newHtml.replace(matchthemeStyleSheet,themeStyleSheet);
+                newHtml = newHtml.replace(matchnotablogStyleSheet,notablogStyleSheet);
+                newHtml = newHtml.replace(matchRootBlock,'');
+                newHtml = newHtml.replace(matchNavAndHeader,'');
+
+
             }
+
+            console.log("")
+            console.log("--------------------------------------------------------")
+            console.log("   Number of matches for matchRegexHtmlUrl:", matchCount);
+            console.log("   Number replaced for matchRegexHtmlUrl:", replaceCount);
+            console.log("--------------------------------------------------------")
 
             //console.log("new html ----------------------------- ", newHtml);
             return newHtml;
@@ -1177,14 +1215,13 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
     const workDir = require('../../server.js')
     //console.log("workDir imported",workDir);
     const html = await generate(workDir, pageIdToPublish);
-    //console.log('html:', html);
     let sectionData = {}; 
     let sectionName;
 
     try {
 
         const sections = {};
-        const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+        const notionDatabaseId = process.env.REACT_APP_NOTION_DATABASE_ID;
         const notionPageApiUrl = `https://api.notion.com/v1/pages/${pageIdToPublish}`;
         const notionDatabaseApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
 
@@ -1196,7 +1233,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
               accept: 'application/json',
               'Notion-Version': '2022-06-28',
               'content-type': 'application/json',
-              Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
+              Authorization: `Bearer ${process.env.REACT_APP_NOTION_API_AXIOS_TOKEN}`,
             },
         };
 
@@ -1234,6 +1271,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
         customAttributes.sectionname = sectionValue;
         customAttributes.subsectionnameprime = subSectionValue;
         customAttributes.htmlbodycode = html;
+        //customAttributes.htmltorichtext = html;
         
         console.log("")
         console.log("--------------------------------------------------------")
@@ -1247,7 +1285,7 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
             accept: 'application/json',
             'Notion-Version': '2022-06-28',
             'content-type': 'application/json',
-            Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
+            Authorization: `Bearer ${process.env.REACT_APP_NOTION_API_AXIOS_TOKEN}`,
             },
             body: JSON.stringify({page_size: 100}),
         };
@@ -1366,8 +1404,8 @@ async function fetchDatabaseItemMetaData(pageIdToPublish) {
 
 async function collectionDatabaseCheck(){
 
-    const API_KEY = process.env.WEBFLOW_API;
-    const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID;
+    const API_KEY = process.env.REACT_APP_WEBFLOW_API;
+    const ARTICLES_COLLECTION_ID = process.env.REACT_APP_ARTICLES_COLLECTION_ID;
     const API_ENDPOINT_ARTICLES = `https://api.webflow.com/beta/collections/${ARTICLES_COLLECTION_ID}/items`;
 
     const articlesQueryOptions = {
@@ -1389,16 +1427,16 @@ async function collectionDatabaseCheck(){
             accept: 'application/json',
             'Notion-Version': '2022-06-28',
             'content-type': 'application/json',
-            Authorization: `Bearer ${process.env.NOTION_API_AXIOS_TOKEN}`,
+            Authorization: `Bearer ${process.env.REACT_APP_NOTION_API_AXIOS_TOKEN}`,
         },
         body: JSON.stringify({page_size: 100}),
     };
-    const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+    const notionDatabaseId = process.env.REACT_APP_NOTION_DATABASE_ID;
     const notionDatabaseApiUrl = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`;
     const notionDatabaseQueryResponse = await fetch(notionDatabaseApiUrl, databaseQueryOptions);
     let notionDatabaseQueryResponseData = await notionDatabaseQueryResponse.json();
 
-    //console.log("notionDaatabaseQueryResponse",notionDatabaseQueryResponse);
+    //console.log("notionDatabaseQueryResponseData",notionDatabaseQueryResponseData);
     const fieldsToExclude = ["htmlbodycode"]; // Fields to exclude
     
     // for (const key in notionDatabaseQueryResponseData) {
@@ -1457,11 +1495,11 @@ async function webflowCollection(pageIdToPublish) {
         //articlesParseData = JSON.parse(customAttributesJSON); // Parse JSON
         //console.log(parsedData);
 
-        const API_KEY = process.env.WEBFLOW_API;
-        const ARTICLES_COLLECTION_ID = process.env.ARTICLES_COLLECTION_ID;
-        const SECTIONS_COLLECTION_ID = process.env.SECTIONS_COLLECTION_ID;
-        const SUBSECTIONS_COLLECTION_ID = process.env.SUBSECTIONS_COLLECTION_ID;
-        const TABLEOFCONTENTS_COLLECTION_ID = process.env.TABLEOFCONTENTS_COLLECTION_ID;
+        const API_KEY = process.env.REACT_APP_WEBFLOW_API;
+        const ARTICLES_COLLECTION_ID = process.env.REACT_APP_ARTICLES_COLLECTION_ID;
+        const SECTIONS_COLLECTION_ID = process.env.REACT_APP_SECTIONS_COLLECTION_ID;
+        const SUBSECTIONS_COLLECTION_ID = process.env.REACT_APP_SUBSECTIONS_COLLECTION_ID;
+        const TABLEOFCONTENTS_COLLECTION_ID = process.env.REACT_APP_TABLEOFCONTENTS_COLLECTION_ID;
         const API_ENDPOINT_ARTICLES = `https://api.webflow.com/beta/collections/${ARTICLES_COLLECTION_ID}/items`;
         const API_ENDPOINT_SECTIONS = `https://api.webflow.com/beta/collections/${SECTIONS_COLLECTION_ID}/items`;
         const API_ENDPOINT_SUBSECTIONS = `https://api.webflow.com/beta/collections/${SUBSECTIONS_COLLECTION_ID}/items`;
@@ -1493,17 +1531,22 @@ async function webflowCollection(pageIdToPublish) {
         let itemNameToFind;
         let itemUidToFind;
         let htmlbodycode;
-
+        let ARTICLES_DATA_UPDATE;
+        let ARTICLES_DATA_CREATE;
+        //let htmltorichtext;
+        //console.log("webflowArticlesCollectionData.id",webflowArticlesCollectionData.id);
         // Check if 'items' property exists in the API response
             if (webflowArticlesCollectionData.hasOwnProperty('items') && Array.isArray(webflowArticlesCollectionData.items)) {
                 itemUidToFind = articlesParseData["itemuid"];
                 itemNameToFind = articlesParseData["name"];
                 itemSectionNameToFind = articlesParseData["sectionname"];
-                htmlbodycode = articlesParseData["htmlbodycode"]
+                htmlbodycode = articlesParseData["htmlbodycode"];
+                //htmltorichtext = articlesParseData["htmlbodycode"];
+
                 articleCollectionItemId = "None";
                 foundItemName = "None";
                 foundItemItemuid = "None";
-
+                
                 console.log("")
                 console.log("LOOP: if (webflowArticlesCollectionData.hasOwnProperty('items')");
                 console.log("--------------------------------------------------------");
@@ -1512,82 +1555,111 @@ async function webflowCollection(pageIdToPublish) {
                 console.log('   Priming creation/update array');
                 console.log("--------------------------------------------------------");
 
-                if (webflowArticlesCollectionData.items.length != 0) {
- 
-                    for (const item of webflowArticlesCollectionData.items) {
+                let itemExists = false;
 
-                        if (item.fieldData.name === itemNameToFind && item.fieldData.itemuid === itemUidToFind) {
-                            
-                            articleCollectionItemId = item.id;
-                            foundItemItemuid = item.fieldData.itemuid;
-                            foundItemName = item.fieldData.name;
+                for (const item of webflowArticlesCollectionData.items) {
+                  if (item.fieldData.name === itemNameToFind) {
+                    itemExists = true;
+                    articleCollectionItemId = item.id;
+                    foundItemItemuid = item.fieldData.itemuid;
+                    foundItemName = item.fieldData.name;
+                    break; // Exit the loop if a match is found
+                  }
+                }
 
-                            console.log("")
-                            console.log("LOOP: if (item.fieldData.name === itemNameToFind)");
-                            console.log("--------------------------------------------------------")
-                            console.log('   Looking for:                ',itemNameToFind,' : ',item.fieldData.itemuid);
-                            console.log('   Found article:              ',foundItemName,' : ',itemUidToFind);
-                            console.log('   Updating it.');
-                            console.log("--------------------------------------------------------")
+                const existingItem = webflowArticlesCollectionData.items.find((item) => item.fieldData.name === itemNameToFind);
+                  
+                if (existingItem) {
+                // Item with the same name already exists, do not create a duplicate
+                    console.log(`Item with name "${itemNameToFind}" exists with webflow ID of "${articleCollectionItemId}`);
 
-                            //console.log('Found item with name', itemNameToFind, 'and id', item.id);
-                            // You can use item.id or perform any other action with the found item here
-                            break; // If you only want to find the first matching item and exit the loop
-                        
-                        } else {
-
-                            console.log("");
-                            console.log("LOOP: if (item.fieldData.name != itemNameToFind)");
-                            console.log("--------------------------------------------------------");
-                            console.log('   Looking for:                ',itemNameToFind,' : ',item.fieldData.itemuid);
-                            console.log('   Found article:               NONE FOUND');
-                            console.log('   Creating it.');
-                            console.log("--------------------------------------------------------");
-                            break; // Exit the loop since you didn't find the item
-
+                    ARTICLES_DATA_UPDATE = {
+                        isArchived: false,
+                        isDraft: false,
+                        fieldData: {
+                            name: articlesParseData["name"],
+                            //slug: articlesParseData["slug"],
+                            itemuid: articlesParseData["itemuid"],
+                            sectionname: articlesParseData["sectionname"],
+                            subsectionnameprime: articlesParseData["subsectionnameprime"],
+                            htmlbodycode: htmlbodycode,
+                            //htmltorichtext: htmltorichtextTEST,
                         }
-                    }
+                    };
 
                 } else {
+                // Create the new item because it doesn't exist
+                //createItem(newItemName, newItemUid);
+                    console.log(`Item with name "${itemNameToFind}" does not exist.`);
 
-                    console.log("LOOP: else");
-                    console.log("")
-                    console.log('Notion database is empty. Creating first entry.');
-                    console.log("--------------------------------------------------------")
+                    ARTICLES_DATA_CREATE = {
+                        isArchived: false,
+                        isDraft: false,
+                        fieldData: {
+                            name: articlesParseData["name"],
+                            slug: articlesParseData["slug"],
+                            itemuid: articlesParseData["itemuid"],
+                            sectionname: articlesParseData["sectionname"],
+                            subsectionnameprime: articlesParseData["subsectionnameprime"],
+                            htmlbodycode: htmlbodycode,
+                            //htmltorichtext: htmltorichtextTEST,
+                        }
+                    };
                 }
+
+                // if (webflowArticlesCollectionData.items.length != 0) {
+ 
+                //     for (const item of webflowArticlesCollectionData.items) {
+
+                //         if (item.fieldData.name === itemNameToFind && item.fieldData.itemuid === itemUidToFind) {
+                            
+                //             articleCollectionItemId = item.id;
+                //             foundItemItemuid = item.fieldData.itemuid;
+                //             foundItemName = item.fieldData.name;
+
+                //             console.log("")
+                //             console.log("LOOP: if (item.fieldData.name === itemNameToFind)");
+                //             console.log("--------------------------------------------------------")
+                //             console.log('   Looking for:                ',itemNameToFind,' : ',item.fieldData.itemuid);
+                //             console.log('   Found article:              ',foundItemName,' : ',itemUidToFind);
+                //             console.log('   Updating it.');
+                //             console.log("--------------------------------------------------------")
+
+                //             //console.log('Found item with name', itemNameToFind, 'and id', item.id);
+                //             // You can use item.id or perform any other action with the found item here
+                //             break; // If you only want to find the first matching item and exit the loop
+                        
+                //         } else {
+
+                //             console.log("");
+                //             console.log("LOOP: if (item.fieldData.name != itemNameToFind)");
+                //             console.log("--------------------------------------------------------");
+                //             console.log('   Looking for:                ',itemNameToFind,' : ',item.fieldData.itemuid);
+                //             console.log('   Found article:               NONE FOUND');
+                //             console.log('   Creating it.');
+                //             console.log("--------------------------------------------------------");
+                //             break; // Exit the loop since you didn't find the item
+
+                //         }
+                //     }
+
+                // } else {
+
+                //     console.log("LOOP: else");
+                //     console.log("")
+                //     console.log('Notion database is empty. Creating first entry.');
+                //     console.log("--------------------------------------------------------")
+                // }
         
         } else {
             // Handle the case where the 'items' property is missing or not an array
             console.error('Requested Notion article ID not found in Database');
         }
         //console.log('itemuid:', itemuid);
-
         //console.log("attributeData",attributeData);
+        //const htmltorichtextTEST = `<!-- fs-richtext-ignore --><!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- iOS Safari --><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><!-- Chrome, Firefox OS and Opera Status Bar Color -->`;
+        //console.log("htmltorichtextTEST ----------------------------- ", htmltorichtextTEST);
 
-        const ARTICLES_DATA_CREATE = {
-            isArchived: false,
-            isDraft: false,
-            fieldData: {
-                name: articlesParseData["name"],
-                slug: articlesParseData["slug"],
-                itemuid: articlesParseData["itemuid"],
-                sectionname: articlesParseData["sectionname"],
-                subsectionnameprime: articlesParseData["subsectionnameprime"],
-                htmlbodycode: htmlbodycode,
-            }
-        };
-        const ARTICLES_DATA_UPDATE = {
-            isArchived: false,
-            isDraft: false,
-            fieldData: {
-                name: articlesParseData["name"],
-                //slug: articlesParseData["slug"],
-                itemuid: articlesParseData["itemuid"],
-                sectionname: articlesParseData["sectionname"],
-                subsectionnameprime: articlesParseData["subsectionnameprime"],
-                htmlbodycode: htmlbodycode,
-            }
-        };
 
         const FINAL_ARTICLES_DATA = foundItemItemuid === "None" ? ARTICLES_DATA_CREATE : ARTICLES_DATA_UPDATE;
 
@@ -1606,7 +1678,7 @@ async function webflowCollection(pageIdToPublish) {
         console.log(`   Article "${foundItemName}" with UID of ${foundItemItemuid} being processed.`)
         console.log("--------------------------------------------------------")
         //itemCollectionId = finalQueryResponseJson.id
-        //console.log("itemCollectionId",itemCollectionId);
+        console.log("finalArticlesOptions",finalArticlesOptions);
 
 
 ////////////// QUERY TOC COLLECTION AND PREP FOR CREATE ITEM OR UPDATE ITEM ///////////////////////////
@@ -1690,10 +1762,11 @@ async function webflowCollection(pageIdToPublish) {
                 if (tableofcontentsExistResponse.ok) {
                     // Check if an item with the given sectionName exists
                     const existingItem = tableofcontentsExistJson.items.find(item => item.fieldData.name === sectionName);
-        
+
                     if (existingItem) {
                         // Return the ID of the existing item
-                        return existingItem.id;
+                        //console.log("doesItemExist found:", existingItem.fieldData.name);
+                        return { existingSectionId: existingItem.id, existingSectionName: existingItem.fieldData.name };
                     } else {
                         return false;
                     }
@@ -1710,39 +1783,56 @@ async function webflowCollection(pageIdToPublish) {
         }
 
         async function createCollectionItem(sectionName, subsections, articleIDs) {
-
-                const slug = sectionName.replace(/ /g, '-').toLowerCase();
-                
-                const TABLEOFCONTENTS_UPDATE_DATA = {
-                    isArchived: false,
-                    isDraft: false,
-                    fieldData: {
-                        name: sectionName,
-                        slug: slug,
-                        section1: sectionName,
-                    },
-                };
-            
-                const TABLEOFCONTENTS_CREATE_DATA = {
-                    isArchived: false,
-                    isDraft: false,
-                    fieldData: {
-                        name: sectionName,
-                        slug: slug,
-                        section1: sectionName,
-                    },
-                };
+                let existingSectionName;
+                let existingSectionId;
+                let slug;
 
                 const existingItemId = await doesItemExist(sectionName);
+                //console.log("Existing Item:", existingItemId);
+
+                if (existingItemId && existingItemId.existingSectionId && existingItemId.existingSectionName) {
+                    existingSectionId = existingItemId.existingSectionId;
+                    existingSectionName = existingItemId.existingSectionName;
+                    //("ID:", existingSectionId);
+                    //console.log("Name:", existingSectionName);
+                    slug = existingSectionName.replace(/ /g, '-').toLowerCase();
+                    //console.log("doesItemExist found:", existingSectionName);
+
+                } else {
+                    console.log("Item not found or error occurred.");
+                }
+                //console.log(`Using this section in UPDATE DATA found: ${sectionName}.`);
+
+                TABLEOFCONTENTS_UPDATE_DATA = {
+                    isArchived: false,
+                    isDraft: false,
+                    fieldData: {
+                        name: existingSectionName,
+                        section1: existingSectionName,
+                    },
+                };
+                TABLEOFCONTENTS_CREATE_DATA = {
+                    isArchived: false,
+                    isDraft: false,
+                    fieldData: {
+                        name: sectionName,
+                        slug: slug,
+                        section1: sectionName,
+                    },
+                };
 
                 if (existingItemId) {
                     // Item already exists, update it
                     FINAL_TABLEOFCONTENTS_DATA = TABLEOFCONTENTS_UPDATE_DATA;
-                    tableofcontentsCollectionItemId = existingItemId; // Store the existing item's ID
-                    console.log(`Item already exists for section: ${sectionName}. Updating it.`);
+                    tableofcontentsCollectionItemId = existingSectionId; // Store the existing item's ID
+                    //console.log("tableofcontentsCollectionItemId",tableofcontentsCollectionItemId);
+                    //console.log(`Item already exists for section: ${existingSectionName}. Updating it with`,FINAL_TABLEOFCONTENTS_DATA);
+                    console.log(`Item already exists for section: ${existingSectionName}. Updating it.`);
+
                 } else {
                     // Item doesn't exist, create a new one
                     FINAL_TABLEOFCONTENTS_DATA = TABLEOFCONTENTS_CREATE_DATA;
+                    //console.log(`Item doesn't exist for section: ${sectionName}. Creating it with`,FINAL_TABLEOFCONTENTS_DATA);
                     console.log(`Item doesn't exist for section: ${sectionName}. Creating it.`);
                 }
 
@@ -1771,9 +1861,9 @@ async function webflowCollection(pageIdToPublish) {
                     // Set the subX-articles field for the current subsection
                     const subArticlesField = `sub${i + 1}-articles`;
                     FINAL_TABLEOFCONTENTS_DATA.fieldData[subArticlesField] = subArticleIDs.length > 0 ? subArticleIDs : '';
-                  }
+                }
 
-                  // If there are no subsections, add articles that match sectionName directly
+                // If there are no subsections, add articles that match sectionName directly
                 if (subsections.length === 0) {
                     // Initialize an array to store article IDs for the section
                     const sectionArticleIDs = [];
@@ -1790,7 +1880,7 @@ async function webflowCollection(pageIdToPublish) {
                     }
                     }
 
-                    console.log("sectionArticleIDs",sectionArticleIDs);
+                    //console.log("sectionArticleIDs",sectionArticleIDs);
                     // Set the sub1-articles field for the section
                     FINAL_TABLEOFCONTENTS_DATA.fieldData['sub1-articles'] = sectionArticleIDs.length > 0 ? sectionArticleIDs : '';
                 }
@@ -1799,6 +1889,7 @@ async function webflowCollection(pageIdToPublish) {
                 //FINAL_TABLEOFCONTENTS_DATA.fieldData['sub-articles'] = articleIDs;
 
                 //const method = existingItemId ? 'PATCH' : 'POST';
+                //console.log("tableofcontentsCollectionItemId",tableofcontentsCollectionItemId);
 
                 const API_ENDPOINT_FINAL_TABLEOFCONTENTS = existingItemId ? `${API_ENDPOINT_TABLEOFCONTENTS}/${tableofcontentsCollectionItemId}` : API_ENDPOINT_TABLEOFCONTENTS;
 
@@ -1823,10 +1914,10 @@ async function webflowCollection(pageIdToPublish) {
 
                     if (tableofcontentsQueryResponse.ok) {
                         const tableofcontentsQueryResponseJson = await tableofcontentsQueryResponse.json();
-                        console.log(`Created collection item for section: ${sectionName}`);
+                        console.log(`${existingItemId ? 'Updated' : 'Created'} collection item for section: ${sectionName}`);
                         //console.log(tableofcontentsQueryResponseJson);
                     } else {
-                        console.error(`Error creating collection item for section: ${sectionName}`);
+                        console.error(`Error ${existingItemId ? 'updating' : 'creating'} collection item for section: ${sectionName}`);
                         //console.log(tableofcontentsQueryResponse);
                         console.error(tableofcontentsQueryResponse.statusText);
                     }
