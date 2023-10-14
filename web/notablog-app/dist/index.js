@@ -1072,17 +1072,28 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
         }
 
         try {
-            let finsweet = "<!-- fs-richtext-ignore -->"
-            let newHtml = finsweet+returnValuePost;
+                let finsweet = "<!-- fs-richtext-ignore -->"
+                let newHtml = returnValuePost;
 
-                matchregexDragonman = returnValuePost.match(regexDragonman);
-                //console.log("newHtml",newHtml);
+                matchregexDragonman = returnValuePost.match(regexDragonman);                
+                newHtml = newHtml.replace(matchregexDragonman,'');
+
                 matchsourceSansProStyleSheet = returnValuePost.match(regexsourceSansProStyleSheet);
+                newHtml = newHtml.replace(matchsourceSansProStyleSheet,sourceSansProStyleSheet);
+
                 matchthemeStyleSheet = returnValuePost.match(regexthemeStyleSheet);
+                newHtml = newHtml.replace(matchthemeStyleSheet,themeStyleSheet);
+
                 matchnotablogStyleSheet = returnValuePost.match(regexnotablogStyleSheet);
+                newHtml = newHtml.replace(matchnotablogStyleSheet,notablogStyleSheet);
+
                 matchRootBlock = returnValuePost.match(regexRootBlock);
-                matchNavAndHeader = returnValuePost.match(regexNavAndHeader);
+                newHtml = newHtml.replace(matchRootBlock,'');
                 
+                matchNavAndHeader = returnValuePost.match(regexNavAndHeader);
+                newHtml = newHtml.replace(matchNavAndHeader,'');
+
+
             while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
 
                 //console.log("returnValuePost",returnValuePost);
@@ -1118,13 +1129,6 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
                 newHtml = newHtml.replace(matchRegexHtmlUrl[0],cloudinaryURL);
                 replaceCount++;
-                newHtml = newHtml.replace(matchregexDragonman,'');
-                newHtml = newHtml.replace(matchsourceSansProStyleSheet,sourceSansProStyleSheet);
-                newHtml = newHtml.replace(matchthemeStyleSheet,themeStyleSheet);
-                newHtml = newHtml.replace(matchnotablogStyleSheet,notablogStyleSheet);
-                newHtml = newHtml.replace(matchRootBlock,'');
-                newHtml = newHtml.replace(matchNavAndHeader,'');
-
 
             }
 

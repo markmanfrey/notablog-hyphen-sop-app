@@ -1,3 +1,61 @@
 <link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@63f1aa74b4fa812b340bd0bfd2e6913b8bdf9c36/SourceSansPro.css">
 <link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@63f1aa74b4fa812b340bd0bfd2e6913b8bdf9c36/theme.css">
 <link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@main/notablog.css">
+
+
+
+ 
+Home
+About Us
+Our Services
+Tutorials
+Blog
+PRODUCTS
+MixItUp 3
+MixItUp Pagination
+MixItUp MultiFilter
+MixItUp
+Overview
+Tutorials
+Licenses
+DOCS
+Get Started
+MixItUp Factory
+Configuration Object
+API Methods
+State Object
+Events
+EXTENSIONS
+MixItUp Pagination
+MixItUp MultiFilter
+ Sign in 
+MixItUp 3
+A high-performance, dependency-free library for animated filtering, sorting, insertion, removal and more...
+MixItUp gives you beautiful animated DOM manipulation on top of native CSS layout.
+
+Get it on GitHub  4270 
+npm install --save-dev mixitup
+
+Commercial use of MixItUp requires a commercial license. Find out more.
+
+LATEST TUTORIALS
+Integrating MixItUp into Your Project
+11th February 2017
+Filtering and Sorting on Load
+26th January 2017
+Using the Dataset API
+7th December 2016
+Sorting with MixItUp
+5th December 2016
+All tutorials 
+Contact Us Terms & Conditions Blog     © 2023 KunkaLabs Ltd 
+ Your Configuration
+{
+    "animation": {
+        "duration": 250,
+        "nudge": false,
+        "reverseOut": false,
+        "effects": "fade translateY(20%)"
+    }
+}
+ 
