@@ -1032,10 +1032,9 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     const themeStyleSheet = '<link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@63f1aa74b4fa812b340bd0bfd2e6913b8bdf9c36/theme.css"></link>';
     const notablogStyleSheet = '<link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/gh/markmanfrey/notablog_css@main/notablog.css"></link>';
 
-    let matchRegexBlockID;
-    let matchregexHtmlHref;
-    let matchRegexPageID;
-    let matchRegexHtmlUrl;
+    //let matchRegexBlockID;
+    //let matchRegexPageID;
+    //let matchRegexHtmlUrl;
     let matchregexDragonman;
     let matchsourceSansProStyleSheet;
     let matchthemeStyleSheet;
@@ -1048,9 +1047,10 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
     let pageId;
     //const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+.png)/g;
     const regexHtmlUrl = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(.png)|((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(.gif)))/g;
-    const regexPageID = /([0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12})/g;
-    const regexBlockID = /[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12}$/g;
-    const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
+    const regexPageID = /(<article\s+id="https:\/\/www.notion.so\/)([0-9A-Za-z]{32})/g;
+    const regexBlockID = /(id=)([0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12})/g;
+    //const regexHtmlHref = /((\w+:\/\/)[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+(id=+[-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|]+))/g;
+    const regexHtmlHref = /https:\/\/www\.notion\.so\/signed\/[^"]+\.(?:png|gif)\?width=\d+&amp;table=block&amp;id=([\w-]+)/g;
     const regexDragonman = /(<div>Powered by*)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(dragonman225)([-a-zA-Z0-9:@;?&=\/%\+\.\*!'\(\),\$_\{\}\^~\[\]`#|\s<">]*)(<\/div>)/g;
     const regexsourceSansProStyleSheet = /(<link rel="stylesheet" type="text\/css" href="css\/SourceSansPro.css">)/g;
     const regexthemeStyleSheet = /(<link rel="stylesheet" type="text\/css" href="css\/theme.css">)/g;
@@ -1062,73 +1062,113 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
 
     let replaceCount = 0;
     let matchCount = 0;
+    let newHtml;
+    //console.log("returnValuePost",returnValuePost);
 
     //console.log("original html",returnValuePost);
     async function processHtml() {
 
         function isValidUUID(uuid) {
-            const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+            //const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+            const uuidPattern = /^[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/;
             return uuidPattern.test(uuid);
         }
 
+        let finsweet = "<!-- fs-richtext-ignore -->"
+
+        matchregexDragonman = returnValuePost.match(regexDragonman);                
+        newHtml = returnValuePost.replace(matchregexDragonman,'');
+
+        matchsourceSansProStyleSheet = newHtml.match(regexsourceSansProStyleSheet);
+        newHtml = newHtml.replace(matchsourceSansProStyleSheet,sourceSansProStyleSheet);
+
+        matchthemeStyleSheet = newHtml.match(regexthemeStyleSheet);
+        newHtml = newHtml.replace(matchthemeStyleSheet,themeStyleSheet);
+
+        matchnotablogStyleSheet = newHtml.match(regexnotablogStyleSheet);
+        newHtml = newHtml.replace(matchnotablogStyleSheet,notablogStyleSheet);
+
+        matchRootBlock = newHtml.match(regexRootBlock);
+        newHtml = newHtml.replace(matchRootBlock,'');
+        
+        matchNavAndHeader = newHtml.match(regexNavAndHeader);
+        newHtml = newHtml.replace(matchNavAndHeader,'');
+
+        const matchRegexPageID = newHtml.match(regexPageID);
+        let pageUID = matchRegexPageID ? matchRegexPageID[0] : null;
+        //console.log("matchRegexPageID",matchRegexPageID);
+        //console.log("pageUID",pageUID);
+        //console.log("newHtml",newHtml);
+
+        if (pageUID) {
+            // Remove "id=" from the UUID if present
+            pageUID = pageUID.replace(/<article\s+id="https:\/\/www.notion.so\//, '');
+        }
+        //console.log("pageUID clean",pageUID);
+
         try {
-                let finsweet = "<!-- fs-richtext-ignore -->"
-                let newHtml = returnValuePost;
 
-                matchregexDragonman = returnValuePost.match(regexDragonman);                
-                newHtml = newHtml.replace(matchregexDragonman,'');
+            let matchregexHtmlHref;
 
-                matchsourceSansProStyleSheet = returnValuePost.match(regexsourceSansProStyleSheet);
-                newHtml = newHtml.replace(matchsourceSansProStyleSheet,sourceSansProStyleSheet);
+            while ((matchregexHtmlHref = regexHtmlHref.exec(newHtml)) !== null) {
 
-                matchthemeStyleSheet = returnValuePost.match(regexthemeStyleSheet);
-                newHtml = newHtml.replace(matchthemeStyleSheet,themeStyleSheet);
-
-                matchnotablogStyleSheet = returnValuePost.match(regexnotablogStyleSheet);
-                newHtml = newHtml.replace(matchnotablogStyleSheet,notablogStyleSheet);
-
-                matchRootBlock = returnValuePost.match(regexRootBlock);
-                newHtml = newHtml.replace(matchRootBlock,'');
-                
-                matchNavAndHeader = returnValuePost.match(regexNavAndHeader);
-                newHtml = newHtml.replace(matchNavAndHeader,'');
+                const match = matchregexHtmlHref[0];
+                const id = matchregexHtmlHref[1]; 
+                //console.log("matchregexHtmlHref",matchregexHtmlHref);
+                //console.log("match",match);
+                //console.log("id",id);
 
 
-            while ((matchregexHtmlHref = regexHtmlHref.exec(returnValuePost)) !== null) {
+                const matchRegexBlockID = match.match(regexBlockID);
+                let imageUID = matchRegexBlockID ? matchRegexBlockID[0] : null;
 
-                //console.log("returnValuePost",returnValuePost);
-
-                matchRegexBlockID = matchregexHtmlHref[0].match(regexBlockID);
-                matchRegexPageID = matchregexHtmlHref[0].match(regexPageID);
-                matchRegexHtmlUrl = matchregexHtmlHref[0].match(regexHtmlUrl);
-                const decodeModule = await import('decode-uri-component');
-                const imageHref = decodeModule.default(matchregexHtmlHref[0]);
-                const imageUID = matchRegexBlockID;
-
-                if (matchRegexHtmlUrl) {
-                    // Increment the match count
-                    matchCount++;
+                if (imageUID) {
+                    // Remove "id=" from the UUID if present
+                    imageUID = imageUID.replace('id=', '');
                 }
-
+                //console.log("imageUID",imageUID);
+                
                 if (!isValidUUID(imageUID)) {
                     // Handle the case where imageUID is not a valid UUID
                     console.error(`Invalid imageUID: ${imageUID}`);
                     continue; // Skip this iteration and proceed to the next one
                 }
-
-                blockId = imageUID;
-
+                
                 block = await notion.blocks.retrieve({
-                    block_id: blockId
+                    block_id: imageUID
                 });
-
+                //console.log("block",block);
                 imageIdFull = block.image.file.url;
 
-                const cloudinaryURL = await uploadImage(imageIdFull,matchRegexPageID[0]);
-                //console.log("matchRegexHtmlUrl[0]",matchRegexHtmlUrl[0]);
+                // isolate just url
+                const matchRegexHtmlUrl = match.match(regexHtmlUrl);
+                let imageUrlClean = matchRegexHtmlUrl ? matchRegexHtmlUrl[0] : null;
 
-                newHtml = newHtml.replace(matchRegexHtmlUrl[0],cloudinaryURL);
-                replaceCount++;
+                if (matchRegexHtmlUrl) {
+                    // Remove "id=" from the UUID if present
+                    imageUrlClean = imageUrlClean.replace(/https:\/\/www.notion.so\/signed\//, '');
+                    console.log("");
+                    const cloudinaryURL = await uploadImage(imageIdFull,pageUID,imageUID);
+                    //console.log("cloudinaryURL",cloudinaryURL);
+                    //console.log("imageUrlClean",imageUrlClean);
+                    //console.log("matchRegexHtmlUrl[0]",matchRegexHtmlUrl[0]);
+                    //console.log("match",match);
+                    console.log("");
+
+    
+                    newHtml = newHtml.replace(imageUrlClean,cloudinaryURL);
+                    replaceCount++;
+                }
+                
+                const decodeModule = await import('decode-uri-component');
+                const imageHrefDecode = decodeModule.default(matchRegexHtmlUrl[0]);
+
+                if (matchRegexHtmlUrl) {
+                    // Increment the match count
+                    matchCount++;
+                }
+                //console.log("matchRegexHtmlUrl",matchRegexHtmlUrl[0]);
+                //console.log("imageHrefDecode",imageHrefDecode);
 
             }
 
@@ -1138,6 +1178,8 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
             console.log("   Number replaced for matchRegexHtmlUrl:", replaceCount);
             console.log("--------------------------------------------------------")
 
+            const regexHtmlClean = /https:\/\/www\.notion\.so\/signed\//g;
+            newHtml = newHtml.replace(regexHtmlClean, '');
             //console.log("new html ----------------------------- ", newHtml);
             return newHtml;
 
@@ -1147,16 +1189,20 @@ async function generate(workDir, pageIdToPublish, opts = {}) {
         }
     }
 
-    async function uploadImage(imageIdFull, pageId) {
+    async function uploadImage(imageIdFull, pageId,imageUID) {
         try {
             cloudinary.config({
                 cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
                 api_key: process.env.CLOUDINARY_API_KEY, 
                 api_secret: process.env.CLOUDINARY_API_SECRET,
-                upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET
             });
-
-            const response = await cloudinary.uploader.upload(imageIdFull, { folder: `test/${pageId}` });
+    
+            const response = await cloudinary.uploader.upload(imageIdFull, {
+                folder: `test/${pageId}`,
+                overwrite: false,
+                unique_filename: false,
+                public_id: imageUID,
+            });
             //console.log("response >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", response);
 
             return response.url;
@@ -1682,7 +1728,7 @@ async function webflowCollection(pageIdToPublish) {
         console.log(`   Article "${foundItemName}" with UID of ${foundItemItemuid} being processed.`)
         console.log("--------------------------------------------------------")
         //itemCollectionId = finalQueryResponseJson.id
-        console.log("finalArticlesOptions",finalArticlesOptions);
+        //console.log("finalArticlesOptions",finalArticlesOptions);
 
 
 ////////////// QUERY TOC COLLECTION AND PREP FOR CREATE ITEM OR UPDATE ITEM ///////////////////////////
